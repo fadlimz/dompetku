@@ -1,0 +1,169 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                     String                  @id @default(uuid()) @map("id") @db.VarChar(100)
+  userName               String?                 @map("user_name") @db.VarChar(15)
+  fullName               String?                 @map("full_name") @db.VarChar(100)
+  email                  String?                 @map("email") @db.VarChar(100)
+  password               String?                 @map("password") @db.VarChar(100)
+  version                Int?
+  createdBy              String?                 @map("created_by") @db.VarChar(100)
+  createdTime            DateTime?               @map("created_time") @db.Timestamp(6)
+  modifiedBy             String?                 @map("modified_by") @db.VarChar(100)
+  modifiedTime           DateTime?               @map("modified_time") @db.Timestamp(6)
+}
+
+model Account {
+  id           String           @id @default(uuid()) @map("id") @db.VarChar(100)
+  accountCode  String           @map("account_code") @db.VarChar(255)
+  accountName  String           @map("account_name") @db.VarChar(255)
+  activeFlag   String           @map("active_flag") @db.VarChar(8)
+  userId       String           @map("user_id") @db.VarChar(100)
+  version      Int?
+  createdBy    String?          @map("created_by") @db.VarChar(100)
+  createdTime  DateTime?        @map("created_time") @db.Timestamp(6)
+  modifiedBy   String?          @map("modified_by") @db.VarChar(100)
+  modifiedTime DateTime?        @map("modified_time") @db.Timestamp(6)
+  user         User             @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_account_user")
+  balance      AccountBalance[]
+  dailyCash    DailyCash[]
+
+  @@unique([accountCode, userId])
+  @@map("account")
+}
+
+model Category {
+  id           String      @id @default(uuid()) @map("id") @db.VarChar(100)
+  categoryCode String      @map("category_code") @db.VarChar(255)
+  categoryName String      @map("category_name") @db.VarChar(255)
+  cashFlowFlag String      @map("cash_flow_flag") @db.VarChar(7)
+  activeFlag   String      @map("active_flag") @db.VarChar(8)
+  userId       String      @map("user_id") @db.VarChar(100)
+  version      Int?
+  createdBy    String?     @map("created_by") @db.VarChar(100)
+  createdTime  DateTime?   @map("created_time") @db.Timestamp(6)
+  modifiedBy   String?     @map("modified_by") @db.VarChar(100)
+  modifiedTime DateTime?   @map("modified_time") @db.Timestamp(6)
+  user         User        @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_category_user")
+  dailyCash    DailyCash[]
+
+  @@unique([categoryCode, userId])
+  @@map("category")
+}
+
+model AccountBalance {
+  id            String                   @id @default(uuid()) @map("id") @db.VarChar(100)
+  accountId     String                   @map("account_id") @db.VarChar(100)
+  value         Decimal                  @db.Decimal(20, 0)
+  userId        String                   @map("user_id") @db.VarChar(100)
+  version       Int?
+  createdBy     String?                  @map("created_by") @db.VarChar(100)
+  createdTime   DateTime?                @map("created_time") @db.Timestamp(6)
+  modifiedBy    String?                  @map("modified_by") @db.VarChar(100)
+  modifiedTime  DateTime?                @map("modified_time") @db.Timestamp(6)
+  account       Account                  @relation(fields: [accountId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_account_balance_account")
+  user          User                     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_account_balance_user")
+  fromTransfers AccountBalanceTransfer[] @relation("from_transfers")
+  toTransfers   AccountBalanceTransfer[] @relation("to_transfers")
+
+  @@map("account_balance")
+}
+
+model AccountBalanceTransfer {
+  id                   String           @id @default(uuid()) @map("id") @db.VarChar(100)
+  transactionCodeId    String?          @map("transaction_code_id") @db.VarChar(100)
+  transactionNumber    Int              @default(autoincrement()) @map("transaction_number")
+  transactionDate      DateTime?        @map("transaction_date") @db.Date
+  userId               String?          @map("user_id") @db.VarChar(100)
+  fromAccountBalanceId String?          @map("from_account_balance_id") @db.VarChar(100)
+  toAccountBalanceId   String?          @map("to_account_balance_id") @db.VarChar(100)
+  value                Decimal?         @db.Decimal(20, 0)
+  description          String?          @db.VarChar(1024)
+  version              Int?
+  createdBy            String?          @map("created_by") @db.VarChar(100)
+  createdTime          DateTime?        @map("created_time") @db.Timestamp(6)
+  modifiedBy           String?          @map("modified_by") @db.VarChar(100)
+  modifiedTime         DateTime?        @map("modified_time") @db.Timestamp(6)
+  accountBalanceFrom   AccountBalance?  @relation("from_transfers", fields: [fromAccountBalanceId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_account_balance_from_transfer")
+  accountBalanceTo     AccountBalance?  @relation("to_transfers", fields: [toAccountBalanceId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_account_balance_to_transfer")
+  transactionCode      TransactionCode? @relation(fields: [transactionCodeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_account_balance_transfer_transaction_code")
+  user                 User?            @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_account_balance_transfer_user")
+
+  @@map("account_balance_transfer")
+}
+
+model DailyCash {
+  id                String           @id @default(uuid()) @map("id") @db.VarChar(100)
+  transactionCodeId String?          @map("transaction_code_id") @db.VarChar(100)
+  transactionNumber Int              @default(autoincrement()) @map("transaction_number")
+  transactionDate   DateTime?        @map("transaction_date") @db.Date
+  userId            String?          @map("user_id") @db.VarChar(100)
+  cashflowFlag      String?          @map("cashflow_flag") @db.VarChar(100)
+  categoryId        String?          @map("category_id") @db.VarChar(100)
+  accountId         String?          @map("account_id") @db.VarChar(100)
+  value             Decimal?         @db.Decimal(20, 0)
+  description       String?          @db.VarChar(1024)
+  version           Int?
+  createdBy         String?          @map("created_by") @db.VarChar(100)
+  createdTime       DateTime?        @map("created_time") @db.Timestamp(6)
+  modifiedBy        String?          @map("modified_by") @db.VarChar(100)
+  modifiedTime      DateTime?        @map("modified_time") @db.Timestamp(6)
+  account           Account?         @relation(fields: [accountId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_daily_cash_account")
+  category          Category?        @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_daily_cash_category")
+  transactionCode   TransactionCode? @relation(fields: [transactionCodeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_daily_cash_transaction_code")
+  user              User?            @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_daily_cash_user")
+
+  @@map("daily_cash")
+}
+
+model TransactionCode {
+  id                     String                  @id @default(uuid()) @map("id") @db.VarChar(100)
+  transactionCode        String?                 @unique @map("transaction_code") @db.VarChar(100)
+  transactionName        String?                 @map("transaction_name") @db.VarChar(100)
+  version                Int?
+  createdBy              String?                 @map("created_by") @db.VarChar(100)
+  createdTime            DateTime?               @map("created_time") @db.Timestamp(6)
+  modifiedBy             String?                 @map("modified_by") @db.VarChar(100)
+  modifiedTime           DateTime?               @map("modified_time") @db.Timestamp(6)
+  accountBalanceTransfer AccountBalanceTransfer[]
+  dailyCash              DailyCash[]
+
+  @@map("transaction_code")
+}
+
+enum account_active_flag_enum {
+  Active
+  Inactive
+}
+
+enum accounts_active_flag_enum {
+  Active
+  Inactive
+}
+
+enum categories_active_flag_enum {
+  Active
+  Inactive
+}
+
+enum categories_cash_flow_flag_enum {
+  Income
+  Expense
+}
+
+enum category_active_flag_enum {
+  Active
+  Inactive
+}
+
+enum category_cash_flow_flag_enum {
+  Income
+  Expense
+}
