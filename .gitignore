@@ -40,4 +40,5 @@ out/
 .gemini/
 *.zip
 *.jar
+!gradle/wrapper/gradle-wrapper.jar
 *.bin
