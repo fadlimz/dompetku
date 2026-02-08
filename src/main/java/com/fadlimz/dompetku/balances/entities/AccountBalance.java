@@ -19,7 +19,7 @@ public class AccountBalance extends BaseEntity {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    @Column(name = "value", precision = 20, scale = 0, nullable = false)
+    @Column(name = "value", columnDefinition = "NUMERIC(30,10)", nullable = false)
     private Double value;
 
     @ManyToOne(fetch = FetchType.LAZY)

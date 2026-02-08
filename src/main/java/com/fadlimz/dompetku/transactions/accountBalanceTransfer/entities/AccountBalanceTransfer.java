@@ -37,7 +37,7 @@ public class AccountBalanceTransfer extends BaseEntity {
     @JoinColumn(name = "to_account_id")
     private Account accountTo;
 
-    @Column(name = "value", precision = 20, scale = 0)
+    @Column(name = "value", columnDefinition = "NUMERIC(30,10)")
     private Double value;
 
     @Column(name = "description", length = 1024)

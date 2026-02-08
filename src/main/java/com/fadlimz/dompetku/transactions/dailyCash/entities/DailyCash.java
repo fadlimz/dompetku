@@ -41,7 +41,7 @@ public class DailyCash extends BaseEntity {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @Column(name = "value", precision = 20, scale = 0)
+    @Column(name = "value", columnDefinition = "NUMERIC(30,10)")
     private Double value;
 
     @Column(name = "description", length = 1024)
