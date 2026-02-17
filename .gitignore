@@ -42,3 +42,8 @@ out/
 *.jar
 !gradle/wrapper/gradle-wrapper.jar
 *.bin
+
+### AI Config Files ###
+GEMINI.md
+QWEN.md
+QWEN.md.bak
