@@ -29,11 +29,18 @@ public class CategoryService extends BaseService<Category> {
     public Category create(CategoryDto dto) {
         User user = userService.getLoggedInUser();
 
-        if (categoryRepository.findByCategoryCodeAndUser(dto.getCategoryCode(), user).isPresent()) {
+        // Auto-generate categoryCode from categoryName if not provided
+        String categoryCode = dto.getCategoryCode();
+        if (StringUtil.isBlank(categoryCode) && !StringUtil.isBlank(dto.getCategoryName())) {
+            categoryCode = generateCode(dto.getCategoryName(), user);
+        }
+
+        if (categoryRepository.findByCategoryCodeAndUser(categoryCode, user).isPresent()) {
             throw new RuntimeException("Category Code already exists for this user.");
         }
 
         Category category = dto.toEntity();
+        category.setCategoryCode(categoryCode);
         category.setUser(user);
 
         return save(category);
@@ -85,4 +92,35 @@ public class CategoryService extends BaseService<Category> {
             return findAll();
         }
         return categoryRepository.search(user, keyword);
-    }}
+    }
+
+    /**
+     * Generates a unique code from a name string.
+     * Format: trim, toUpperCase, replace spaces with underscore
+     * @param name the source name
+     * @param user the current user (for user-specific uniqueness)
+     * @return unique code
+     */
+    private String generateCode(String name, User user) {
+        String baseCode = name.trim().toUpperCase().replaceAll("\\s+", "_");
+        return findUniqueCode(baseCode, user);
+    }
+
+    /**
+     * Finds a unique code by adding suffix if necessary.
+     * @param baseCode the base code to check
+     * @param user the current user
+     * @return unique code with suffix if needed
+     */
+    private String findUniqueCode(String baseCode, User user) {
+        String uniqueCode = baseCode;
+        int counter = 1;
+
+        while (categoryRepository.findByCategoryCodeAndUser(uniqueCode, user).isPresent()) {
+            uniqueCode = baseCode + "_" + counter;
+            counter++;
+        }
+
+        return uniqueCode;
+    }
+}

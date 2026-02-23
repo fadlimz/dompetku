@@ -1,6 +1,5 @@
 package com.fadlimz.dompetku.master.account.controllers;
 
-import com.fadlimz.dompetku.config.StringUtil;
 import com.fadlimz.dompetku.master.account.dtos.AccountDto;
 import com.fadlimz.dompetku.master.account.entities.Account;
 import com.fadlimz.dompetku.master.account.services.AccountService;
@@ -19,13 +18,7 @@ public class AccountController {
 
     @GetMapping
     public ResponseEntity<List<AccountDto>> getAllOrSearch(@RequestParam(required = false) String keyword) {
-        List<Account> accounts;
-        if (!StringUtil.isBlank(keyword)) {
-            accounts = accountService.search(keyword);
-        } else {
-            accounts = accountService.findAll();
-        }
-        
+        List<Account> accounts = accountService.search(keyword);
         return ResponseEntity.ok(AccountDto.fromEntityList(accounts));
     }
 

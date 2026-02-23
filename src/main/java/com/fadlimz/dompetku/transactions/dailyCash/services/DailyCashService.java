@@ -131,10 +131,12 @@ public class DailyCashService extends BaseService<DailyCash> {
     private TransactionCode resolveTransactionCode(com.fadlimz.dompetku.master.transactionCode.dtos.TransactionCodeDto dto) {
         if (!StringUtil.isBlank(dto.getId())) {
             // If ID is provided, find by ID
-            return transactionCodeService.findById(dto.getId()).orElse(null);
+            return transactionCodeService.findById(dto.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("TransactionCode not found with id: " + dto.getId()));
         } else if (!StringUtil.isBlank(dto.getTransactionCode())) {
             // If no ID but code is provided, find by code
-            return transactionCodeService.findByTransactionCode(dto.getTransactionCode()).orElse(null);
+            return transactionCodeService.findByTransactionCode(dto.getTransactionCode())
+                    .orElseThrow(() -> new IllegalArgumentException("TransactionCode not found with code: " + dto.getTransactionCode()));
         }
         return null;
     }
@@ -142,10 +144,12 @@ public class DailyCashService extends BaseService<DailyCash> {
     private Category resolveCategory(com.fadlimz.dompetku.master.category.dtos.CategoryDto dto) {
         if (!StringUtil.isBlank(dto.getId())) {
             // If ID is provided, find by ID
-            return categoryService.findById(dto.getId()).orElse(null);
+            return categoryService.findById(dto.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + dto.getId()));
         } else if (!StringUtil.isBlank(dto.getCategoryCode())) {
             // If no ID but code is provided, find by code
-            return categoryService.findByCategoryCode(dto.getCategoryCode()).orElse(null);
+            return categoryService.findByCategoryCode(dto.getCategoryCode())
+                    .orElseThrow(() -> new IllegalArgumentException("Category not found with code: " + dto.getCategoryCode()));
         }
         return null;
     }
@@ -153,10 +157,12 @@ public class DailyCashService extends BaseService<DailyCash> {
     private Account resolveAccount(com.fadlimz.dompetku.master.account.dtos.AccountDto dto) {
         if (!StringUtil.isBlank(dto.getId())) {
             // If ID is provided, find by ID
-            return accountService.findById(dto.getId()).orElse(null);
+            return accountService.findById(dto.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Account not found with id: " + dto.getId()));
         } else if (!StringUtil.isBlank(dto.getAccountCode())) {
             // If no ID but code is provided, find by code
-            return accountService.findByAccountCode(dto.getAccountCode()).orElse(null);
+            return accountService.findByAccountCode(dto.getAccountCode())
+                    .orElseThrow(() -> new IllegalArgumentException("Account not found with code: " + dto.getAccountCode()));
         }
         return null;
     }
@@ -196,5 +202,15 @@ public class DailyCashService extends BaseService<DailyCash> {
         } else {
             accountBalanceService.update(balance);
         }
+    }
+
+    @Override
+    public Optional<DailyCash> findById(String id) {
+        return dailyCashRepository.findByIdAndUser(id, userService.getLoggedInUser());
+    }
+
+    @Override
+    public List<DailyCash> findAll() {
+        return dailyCashRepository.findByUser(userService.getLoggedInUser());
     }
 }

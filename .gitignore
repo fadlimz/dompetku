@@ -47,3 +47,10 @@ out/
 GEMINI.md
 QWEN.md
 QWEN.md.bak
+
+### Environment Variables ###
+.env
+*.env
+
+### Docker ###
+docker-compose.override.yml

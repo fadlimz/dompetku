@@ -1,6 +1,5 @@
 package com.fadlimz.dompetku.master.category.controllers;
 
-import com.fadlimz.dompetku.config.StringUtil;
 import com.fadlimz.dompetku.master.category.dtos.CategoryDto;
 import com.fadlimz.dompetku.master.category.entities.Category;
 import com.fadlimz.dompetku.master.category.services.CategoryService;
@@ -19,13 +18,7 @@ public class CategoryController {
 
     @GetMapping
     public ResponseEntity<List<CategoryDto>> getAllOrSearch(@RequestParam(required = false) String keyword) {
-        List<Category> categories;
-        if (!StringUtil.isBlank(keyword)) {
-            categories = categoryService.search(keyword);
-        } else {
-            categories = categoryService.findAll();
-        }
-        
+        List<Category> categories = categoryService.search(keyword);
         return ResponseEntity.ok(CategoryDto.fromEntityList(categories));
     }
 

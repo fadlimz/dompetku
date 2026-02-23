@@ -46,19 +46,22 @@ public class AccountBalanceTransferService extends BaseService<AccountBalanceTra
         AccountBalanceTransfer entity = dto.toEntity();
 
         if (!StringUtil.isBlank(dto.getTransactionCodeId())) {
-            entity.setTransactionCode(transactionCodeService.findById(dto.getTransactionCodeId()).orElse(null));
+            entity.setTransactionCode(transactionCodeService.findById(dto.getTransactionCodeId())
+                    .orElseThrow(() -> new IllegalArgumentException("TransactionCode not found with id: " + dto.getTransactionCodeId())));
         }
 
         if (!StringUtil.isBlank(dto.getFromAccountId())) {
-            entity.setAccountFrom(accountService.findById(dto.getFromAccountId()).orElse(null)); // Gunakan accountService
+            entity.setAccountFrom(accountService.findById(dto.getFromAccountId())
+                    .orElseThrow(() -> new IllegalArgumentException("FromAccount not found with id: " + dto.getFromAccountId())));
         }
 
         if (!StringUtil.isBlank(dto.getToAccountId())) {
-            entity.setAccountTo(accountService.findById(dto.getToAccountId()).orElse(null)); // Gunakan accountService
+            entity.setAccountTo(accountService.findById(dto.getToAccountId())
+                    .orElseThrow(() -> new IllegalArgumentException("ToAccount not found with id: " + dto.getToAccountId())));
         }
 
         // Apply balances
-        adjustBalances(entity.getAccountFrom(), entity.getAccountTo(), entity.getValue(), false); // Gunakan accountFrom, accountTo
+        adjustBalances(entity.getAccountFrom(), entity.getAccountTo(), entity.getValue(), false);
 
         entity.setUser(user);
         return save(entity);
@@ -69,26 +72,29 @@ public class AccountBalanceTransferService extends BaseService<AccountBalanceTra
                 .orElseThrow(() -> new RuntimeException("Transfer not found"));
 
         // 1. Revert balances before
-        adjustBalances(before.getAccountFrom(), before.getAccountTo(), before.getValue(), true); // Gunakan accountFrom, accountTo
+        adjustBalances(before.getAccountFrom(), before.getAccountTo(), before.getValue(), true);
 
         // 2. Prepare updated entity
         AccountBalanceTransfer entity = dto.toEntity();
         entity.setId(id);
 
         if (!StringUtil.isBlank(dto.getTransactionCodeId())) {
-            entity.setTransactionCode(transactionCodeService.findById(dto.getTransactionCodeId()).orElse(null));
+            entity.setTransactionCode(transactionCodeService.findById(dto.getTransactionCodeId())
+                    .orElseThrow(() -> new IllegalArgumentException("TransactionCode not found with id: " + dto.getTransactionCodeId())));
         }
 
         if (!StringUtil.isBlank(dto.getFromAccountId())) {
-            entity.setAccountFrom(accountService.findById(dto.getFromAccountId()).orElse(null)); // Gunakan accountService
+            entity.setAccountFrom(accountService.findById(dto.getFromAccountId())
+                    .orElseThrow(() -> new IllegalArgumentException("FromAccount not found with id: " + dto.getFromAccountId())));
         }
 
         if (!StringUtil.isBlank(dto.getToAccountId())) {
-            entity.setAccountTo(accountService.findById(dto.getToAccountId()).orElse(null)); // Gunakan accountService
+            entity.setAccountTo(accountService.findById(dto.getToAccountId())
+                    .orElseThrow(() -> new IllegalArgumentException("ToAccount not found with id: " + dto.getToAccountId())));
         }
 
         // 3. Apply balances after
-        adjustBalances(entity.getAccountFrom(), entity.getAccountTo(), entity.getValue(), false); // Gunakan accountFrom, accountTo
+        adjustBalances(entity.getAccountFrom(), entity.getAccountTo(), entity.getValue(), false);
 
         entity.setUser(userService.getLoggedInUser());
         return update(entity);

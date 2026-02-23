@@ -23,11 +23,18 @@ public class TransactionCodeService extends BaseService<TransactionCode> {
     }
 
     public TransactionCode create(TransactionCodeDto dto) {
-        if (transactionCodeRepository.findByTransactionCode(dto.transactionCode).isPresent()) {
+        // Auto-generate transactionCode from transactionName if not provided
+        String transactionCode = dto.transactionCode;
+        if (StringUtil.isBlank(transactionCode) && !StringUtil.isBlank(dto.transactionName)) {
+            transactionCode = generateCode(dto.transactionName);
+        }
+
+        if (transactionCodeRepository.findByTransactionCode(transactionCode).isPresent()) {
             throw new RuntimeException("Transaction Code already exists.");
         }
 
         TransactionCode entity = dto.toEntity();
+        entity.setTransactionCode(transactionCode);
         return save(entity);
     }
 
@@ -56,5 +63,33 @@ public class TransactionCodeService extends BaseService<TransactionCode> {
             return findAll();
         }
         return transactionCodeRepository.search(keyword);
+    }
+
+    /**
+     * Generates a unique code from a name string.
+     * Format: trim, toUpperCase, replace spaces with underscore
+     * @param name the source name
+     * @return unique code
+     */
+    private String generateCode(String name) {
+        String baseCode = name.trim().toUpperCase().replaceAll("\\s+", "_");
+        return findUniqueCode(baseCode);
+    }
+
+    /**
+     * Finds a unique code by adding suffix if necessary.
+     * @param baseCode the base code to check
+     * @return unique code with suffix if needed
+     */
+    private String findUniqueCode(String baseCode) {
+        String uniqueCode = baseCode;
+        int counter = 1;
+
+        while (transactionCodeRepository.findByTransactionCode(uniqueCode).isPresent()) {
+            uniqueCode = baseCode + "_" + counter;
+            counter++;
+        }
+
+        return uniqueCode;
     }
 }

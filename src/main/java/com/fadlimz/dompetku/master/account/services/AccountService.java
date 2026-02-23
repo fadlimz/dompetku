@@ -29,15 +29,22 @@ public class AccountService extends BaseService<Account> {
     public Account create(AccountDto dto) {
         User user = userService.getLoggedInUser();
 
+        // Auto-generate accountCode from accountName if not provided
+        String accountCode = dto.getAccountCode();
+        if (StringUtil.isBlank(accountCode) && !StringUtil.isBlank(dto.getAccountName())) {
+            accountCode = generateCode(dto.getAccountName(), user);
+        }
+
         // Check duplicate
-        if (accountRepository.findByAccountCodeAndUser(dto.getAccountCode(), user).isPresent()) {
+        if (accountRepository.findByAccountCodeAndUser(accountCode, user).isPresent()) {
             throw new RuntimeException("Account Code already exists for this user.");
         }
 
         // Use toEntity from DTO
         Account account = dto.toEntity();
+        account.setAccountCode(accountCode);
         account.setUser(user);
-        
+
         // BaseService.save handles auditing and versioning
         return save(account);
     }
@@ -96,5 +103,35 @@ public class AccountService extends BaseService<Account> {
             return findAll();
         }
         return accountRepository.search(user, keyword);
+    }
+
+    /**
+     * Generates a unique code from a name string.
+     * Format: trim, toUpperCase, replace spaces with underscore
+     * @param name the source name
+     * @param user the current user (for user-specific uniqueness)
+     * @return unique code
+     */
+    private String generateCode(String name, User user) {
+        String baseCode = name.trim().toUpperCase().replaceAll("\\s+", "_");
+        return findUniqueCode(baseCode, user);
+    }
+
+    /**
+     * Finds a unique code by adding suffix if necessary.
+     * @param baseCode the base code to check
+     * @param user the current user
+     * @return unique code with suffix if needed
+     */
+    private String findUniqueCode(String baseCode, User user) {
+        String uniqueCode = baseCode;
+        int counter = 1;
+
+        while (accountRepository.findByAccountCodeAndUser(uniqueCode, user).isPresent()) {
+            uniqueCode = baseCode + "_" + counter;
+            counter++;
+        }
+
+        return uniqueCode;
     }
 }
