@@ -17,7 +17,7 @@ FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
 
-EXPOSE 8000
+EXPOSE 7860
 
 # Optimasi RAM saat menjalankan Java di server kecil
 ENTRYPOINT ["java", "-Xmx256m", "-Xss512k", "-jar", "app.jar"]
