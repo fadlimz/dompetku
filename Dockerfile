@@ -6,6 +6,7 @@ WORKDIR /app
 COPY build.gradle settings.gradle ./
 COPY gradle ./gradle
 COPY gradlew ./
+RUN chmod +x gradlew
 RUN ./gradlew --no-daemon dependencies
 
 # Baru copy source code dan build
