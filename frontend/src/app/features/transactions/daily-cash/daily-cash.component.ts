@@ -272,6 +272,27 @@ export class DailyCashComponent implements OnInit {
     this.showToastMessage(message);
   }
 
+  deleteDailyCash(): void {
+    if (!this.selectedDailyCash || !confirm('Yakin ingin menghapus transaksi ini?')) {
+      return;
+    }
+
+    this.isSubmitting = true;
+    this.transactionService.delete(this.selectedDailyCash.id).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.closeFormModal();
+        this.closeDateDialog();
+        this.loadDailyCash();
+        this.showToastMessage('Transaksi berhasil dihapus');
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        this.submitError = err.error?.message || 'Gagal menghapus transaksi';
+      }
+    });
+  }
+
   showToastMessage(message: string): void {
     this.toastMessage = message;
     this.showToast = true;

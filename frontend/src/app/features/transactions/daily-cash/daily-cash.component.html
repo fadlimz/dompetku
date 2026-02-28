@@ -162,6 +162,14 @@
 
           <!-- Buttons -->
           <div class="flex gap-3">
+            @if (isEditMode) {
+              <button 
+                type="button"
+                (click)="deleteDailyCash()"
+                class="px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors">
+                Hapus
+              </button>
+            }
             <button 
               type="button" 
               (click)="closeFormModal()"
