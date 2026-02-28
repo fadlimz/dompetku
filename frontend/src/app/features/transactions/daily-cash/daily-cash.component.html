@@ -75,6 +75,20 @@
             }
           }
         </div>
+
+        <!-- Floating Add Button in Date Dialog -->
+        <button 
+          (click)="openFormModal()" 
+          class="md:hidden fixed bottom-16 left-1/2 -translate-x-1/2 bg-blue-500 hover:bg-blue-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-colors z-40">
+          <span class="text-2xl">+</span>
+        </button>
+
+        <button 
+          (click)="openFormModal()" 
+          class="hidden md:flex fixed bottom-8 left-1/2 -translate-x-1/2 bg-blue-500 hover:bg-blue-600 text-white rounded-full px-6 py-3 items-center gap-2 shadow-lg transition-colors">
+          <span class="text-xl">+</span>
+          <span class="font-medium">Tambah Transaksi</span>
+        </button>
       </div>
     </div>
   }
@@ -194,7 +208,7 @@
 
   <!-- Toast Notification -->
   @if (showToast) {
-    <div class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+    <div class="fixed top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-pulse">
       {{ toastMessage }}
     </div>
   }
