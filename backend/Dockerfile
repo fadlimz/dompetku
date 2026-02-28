@@ -1,0 +1,24 @@
+# Stage 1: Build
+FROM gradle:8.10-jdk17 AS build
+WORKDIR /app
+
+# Hanya copy file config dulu agar download library bisa di-cache oleh Docker
+COPY build.gradle settings.gradle ./
+COPY gradle ./gradle
+COPY gradlew ./
+RUN chmod +x gradlew
+RUN ./gradlew --no-daemon dependencies
+
+# Baru copy source code dan build
+COPY src ./src
+RUN ./gradlew --no-daemon bootJar -x test
+
+# Stage 2: Run
+FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /app
+COPY --from=build /app/build/libs/*.jar app.jar
+
+EXPOSE 7860
+
+# Optimasi RAM saat menjalankan Java di server Hugging Face (16GB RAM available)
+ENTRYPOINT ["java", "-Xmx1g", "-Xss512k", "-jar", "app.jar"]

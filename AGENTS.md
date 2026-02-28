@@ -1,179 +1,238 @@
-# AGENTS.md - Coding Guidelines for Dompetku
+# Aturan Komunikasi
+1. Gunakan bahasa Indonesia untuk semua komunikasi
 
-## Build Commands
+# Dompetku - Aplikasi Manajemen Keuangan Pribadi
 
+## Gambaran Umum Proyek
+
+Dompetku adalah aplikasi manajemen keuangan pribadi yang dibangun dengan Spring Boot (Java 17) yang memungkinkan pengguna melacak transaksi keuangan mereka, mengelola akun, dan mengategorikan pengeluaran/pemasukan. Aplikasi ini menggunakan otentikasi dan otorisasi berbasis JWT, dengan SQLite sebagai database utama.
+
+### Teknologi & Fitur Utama:
+- **Framework Backend**: Spring Boot 3.5.0
+- **Bahasa Pemrograman**: Java 17
+- **Database**: SQLite (dengan Hibernate/JPA)
+- **Otentikasi**: JWT (JSON Web Tokens)
+- **Keamanan**: Spring Security
+- **Sistem Build**: Gradle
+- **ORM**: JPA/Hibernate
+- **Arsitektur**: REST API dengan arsitektur berlapis (Controllers, Services, Entities)
+
+### Model Domain:
+Berdasarkan skema Prisma, aplikasi ini mengelola:
+- **Pengguna**: Akun pengguna dengan otentikasi
+- **Akun**: Akun keuangan dengan saldo
+- **Kategori**: Kategori transaksi (Pemasukan/Pengeluaran)
+- **Transaksi**: Arus kas harian dan transfer antar akun
+- **Saldo**: Pelacakan saldo akun
+
+## Membangun dan Menjalankan
+
+### Prasyarat
+- Java 17
+- Gradle (wrapper disertakan)
+
+### Perintah Build
 ```bash
-# Build the project
+# Membangun proyek
 ./gradlew build
 
-# Run all tests
-./gradlew test
-
-# Run a single test class
-./gradlew test --tests "com.fadlimz.dompetku.base.services.BaseServiceImplTest"
-
-# Run a single test method
-./gradlew test --tests "com.fadlimz.dompetku.base.services.BaseServiceImplTest.testMethodName"
-
-# Run the application
+# Menjalankan aplikasi
 ./gradlew bootRun
 
-# Create executable JAR
-./gradlew bootJar
+# Menjalankan tes
+./gradlew test
 
-# Clean build artifacts
+# Membersihkan build
 ./gradlew clean
 ```
 
-## Technology Stack
-
-- **Framework**: Spring Boot 3.5.0
-- **Language**: Java 17
-- **Build Tool**: Gradle
-- **Database**: SQLite with Hibernate/JPA
-- **Security**: Spring Security + JWT
-- **Utilities**: Lombok, JUnit 5
-
-## Code Style Guidelines
-
-### Package Structure
-```
-com.fadlimz.dompetku/
-├── base/               # Base classes (entities, DTOs, services)
-├── config/             # Configuration and utility classes
-├── master/             # Master data modules
-│   ├── account/
-│   ├── category/
-│   ├── transactionCode/
-│   └── user/
-└── transactions/       # Transaction modules
-    ├── accountBalanceTransfer/
-    └── dailyCash/
+### Metode Jalankan Alternatif
+```bash
+# Mengompilasi dan menjalankan JAR
+./gradlew bootJar
+java -jar build/libs/dompetku-0.0.1-SNAPSHOT.jar
 ```
 
-### Entity Classes
-- Extend `BaseEntity` for audit fields (id, version, createdBy, createdTime, etc.)
-- Use Lombok `@Getter` and `@Setter` on the class
-- Use JPA annotations: `@Entity`, `@Table`, `@Id`, etc.
-- Fields should be `private`
+### Endpoint API
+- `/hello` - Endpoint cek kesehatan dasar yang mengembalikan "Hello World from Dompetku API!"
+- `/api/users` - Pembuatan pengguna (publik)
+- `/api/auth/**` - Endpoint otentikasi (publik)
+- Endpoint terotentikasi lainnya untuk mengelola keuangan
 
-```java
-@Entity
-@Table(name = "accounts")
-@Getter
-@Setter
-public class Account extends BaseEntity {
-    @Column(name = "account_code")
-    private String accountCode;
-}
+## Konvensi Pengembangan
+
+### Aturan Coding & Arsitektur
+1. **Layanan (Services)**:
+   - **Satu Entity = Satu Service Class**: Jangan membuat Interface terpisah untuk Service. Buat langsung class concrete yang meng-extend `BaseService<T>`.
+   - **Gunakan BaseService**: Manfaatkan method `findById`, `save`, `update`, `delete` dari `BaseService` sebisa mungkin untuk mengurangi duplikasi kode. Override hanya jika diperlukan (misalnya untuk validasi keamanan tambahan).
+2. **Entity Creation/Update**:
+   - Gunakan pendekatan **Setter** (`entity.setX(val)`) atau method `toEntity()` daripada Builder pattern untuk logika pembuatan atau pembaruan entity di dalam Service. Ini lebih disukai untuk konsistensi dengan gaya Java Beans/JPA.
+
+3. **DTO Standardization**:
+- Semua variabel state dalam DTO harus menggunakan access modifier **public**.
+- Setiap kelas DTO harus memiliki metode berikut:
+- `toEntity()`: Mengonversi DTO ke Entity baru.
+- `static fromEntity(Entity entity)`: Mengonversi Entity ke DTO.
+- `static toEntityList(List<Dto> dtos)`: Mengonversi list DTO ke list Entity.
+- `static fromEntityList(List<Entity> entities)`: Mengonversi list Entity ke list DTO.
+- **Konvensi Pemetaan (Mapping)**:
+    - **Audit Fields**: Tetap gunakan `super.toEntity(Class)` dan `BaseDto.fromEntity(Class, entity)` untuk menangani field audit (`id`, `version`, `createdBy`, dsb) secara otomatis.
+    - **Direct Assignment**: Pada metode `fromEntity`, gunakan akses langsung ke field DTO (`dto.field = entity.getField()`) karena field DTO bersifat `public`. Jangan gunakan setter untuk DTO jika tidak diperlukan.
+    - **Entity Setters**: Pada metode `toEntity`, tetap gunakan setter (`entity.setField()`) karena field pada Entity bersifat `private`.
+    - **Null Safety**: Selalu tambahkan *null check* pada parameter `entity` di awal metode `fromEntity`.
+- Jangan gunakan manual mapping di Controller atau Service jika memungkinkan, gunakan metode konversi yang ada di DTO.
+
+4. **String Handling**:
+- Gunakan `StringUtil.isBlank(str)` dari package `com.fadlimz.dompetku.config` untuk pengecekan string `null`, kosong (`""`), atau hanya berisi spasi (`" "`). Jangan gunakan manual check seperti `str == null || str.isEmpty()`.
+### Struktur Proyek
+```
+src/
+├── main/
+│   ├── java/com/fadlimz/dompetku/
+│   │   ├── base/           # Kelas dasar, DTO, entitas
+│   │   │   ├── dtos/       # Object Transfer Data
+│   │   │   ├── entities/   # Kelas Entitas JPA
+│   │   │   └── services/   # Antarmuka layanan dasar
+│   │   ├── config/         # Kelas keamanan dan konfigurasi
+│   │   ├── user/           # Fungsionalitas terkait pengguna
+│   │   ├── DompetkuApplication.java  # Kelas aplikasi utama
+│   │   └── HelloController.java      # Contoh controller
+│   └── resources/
+│       ├── application.properties    # Properti konfigurasi
+│       ├── static/         # Sumber daya statis
+│       └── templates/      # File template
 ```
 
-### DTO Classes
-- Extend `BaseDto`
-- Fields must be `public` (no access modifier or explicit `public`)
-- Required Lombok annotations: `@Data`, `@EqualsAndHashCode(callSuper = true)`, `@NoArgsConstructor`, `@AllArgsConstructor`, `@SuperBuilder`
-- Must implement four conversion methods:
+### Keamanan
+- Otentikasi berbasis JWT telah diterapkan
+- Kata sandi dienkripsi menggunakan BCrypt
+- Manajemen sesi tanpa status
+- Endpoint publik: Registrasi dan otentikasi pengguna
+- Endpoint terproteksi: Semua fitur manajemen keuangan lainnya
 
-```java
-@Data
-@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
-public class AccountDto extends BaseDto {
-    public String accountCode;
-    public String accountName;
-    
-    public Account toEntity() {
-        Account account = super.toEntity(Account.class);
-        account.setAccountCode(accountCode);
-        return account;
-    }
-    
-    public static AccountDto fromEntity(Account entity) {
-        if (entity == null) return null;
-        AccountDto dto = BaseDto.fromEntity(AccountDto.class, entity);
-        dto.accountCode = entity.getAccountCode();
-        return dto;
-    }
-    
-    public static List<Account> toEntityList(List<AccountDto> dtos) {
-        return dtos.stream().map(AccountDto::toEntity).collect(Collectors.toList());
-    }
-    
-    public static List<AccountDto> fromEntityList(List<Account> entities) {
-        return entities.stream().map(AccountDto::fromEntity).collect(Collectors.toList());
-    }
-}
+### Database
+- Database SQLite disimpan sebagai file `dompetku.db`
+- Pembaruan skema otomatis diaktifkan (`ddl-auto=update`)
+- JPA/Hibernate dengan dialek SQLite khusus
+
+### Pengujian
+- JUnit 5 untuk pengujian unit/integrasi
+- Starter pengujian Spring Boot standar disertakan
+- File tes terletak di `src/test/java/`
+
+## Konfigurasi Lingkungan
+
+Aplikasi ini menggunakan konfigurasi berikut di `application.properties`:
+- Koneksi database SQLite
+- Pembaruan otomatis Hibernate DDL
+- Logging SQL diaktifkan untuk debugging
+
+## Catatan Arsitektur
+
+Aplikasi ini mengikuti arsitektur Spring Boot khas dengan:
+- Controller REST untuk endpoint API
+- Layer layanan untuk logika bisnis
+- Layer repositori untuk akses data
+- Konfigurasi keamanan dengan filter JWT
+- Kelas entitas yang dipetakan ke tabel database
+- DTO untuk transfer data antar layer
+
+---
+
+## Frontend (Angular 19)
+
+### Teknologi & Fitur Utama:
+- **Framework**: Angular 19.2.0 (Standalone Components)
+- **Bahasa**: TypeScript 5.7
+- **Styling**: TailwindCSS 3.x
+- **HTTP**: Angular HttpClient dengan interceptors
+- **Routing**: Angular Router dengan lazy loading
+
+### Struktur Proyek Frontend
+```
+frontend/
+├── src/
+│   ├── app/
+│   │   ├── core/              # Core functionality
+│   │   │   ├── guards/        # Route guards (auth.guard.ts)
+│   │   │   ├── interceptors/  # HTTP interceptors (auth.interceptor.ts)
+│   │   │   ├── models/        # TypeScript interfaces
+│   │   │   └── services/      # API services
+│   │   ├── features/         # Feature modules (lazy loaded)
+│   │   │   ├── auth/          # Login & Register
+│   │   │   ├── dashboard/    # Dashboard page
+│   │   │   ├── accounts/     # Account management
+│   │   │   ├── transactions/ # Transaction management
+│   │   │   └── categories/   # Category management
+│   │   ├── shared/           # Shared components, directives, pipes
+│   │   ├── app.component.ts  # Root component
+│   │   ├── app.config.ts     # App configuration
+│   │   └── app.routes.ts     # Route definitions
+│   ├── environments/          # Environment configs
+│   ├── styles.scss           # Global styles (Tailwind)
+│   └── index.html            # Entry HTML
+├── tailwind.config.js        # Tailwind configuration
+├── postcss.config.js         # PostCSS configuration
+└── angular.json              # Angular CLI configuration
 ```
 
-### Service Classes
-- Extend `BaseService<T>` (concrete class, no interface)
-- Annotate with `@Service` and `@Transactional`
-- Use constructor injection for dependencies
-- Override `findById` and `findAll` for user isolation
+### Konvensi Pengembangan Frontend
+1. **Standalone Components**: Semua komponen menggunakan standalone, tanpa NgModule
+2. **Lazy Loading**: Setiap feature di-load secara lazy melalui routes
+3. **TailwindCSS**: Styling menggunakan utility classes TailwindCSS
+4. **Services**: Satu service per domain (auth, account, transaction, category)
+5. **Models**: TypeScript interfaces untuk type safety
 
-```java
-@Service
-@Transactional
-public class AccountService extends BaseService<Account> {
-    private final AccountRepository accountRepository;
-    private final UserService userService;
-    
-    public AccountService(AccountRepository accountRepository, UserService userService) {
-        super(accountRepository);
-        this.accountRepository = accountRepository;
-        this.userService = userService;
-    }
-}
+### Pattern Master Data (CRUD)
+Untuk halaman master data seperti Akun, Kategori, dll, gunakan pattern berikut:
+
+#### Layout Halaman
+- **Responsive Grid**: 2 kolom pada mobile (`grid-cols-2`), 4 kolom pada desktop (`md:grid-cols-4`)
+- **Floating Add Button**: Tombol "+ Tambah [Item]" fixed di bottom center
+  - Mobile: Circle button (`w-14 h-14 rounded-full`)
+  - Desktop: Full button dengan text (`px-6 py-3 rounded-full`)
+- **Sort**: Urutkan data berdasarkan nama secara Ascending (A-Z)
+
+#### Card Display
+- Tampilkan nama dan status aktif saja (tidak perlu menampilkan kode)
+- Label status: "Aktif" (jika Active) / "Tidak Aktif" (jika Inactive)
+- Click card membuka modal edit
+
+#### Modal Form (Add/Edit)
+- Gunakan satu modal untuk Add dan Edit (mode dinamis)
+- **Input Nama**: Text input standar
+- **Active Flag**: Toggle switch aesthetic (bukan checkbox standar)
+  - Default: checked (Aktif)
+  - Nilai: "Active" / "Inactive" (bukan Y/N)
+- **Error Handling**: Tampilkan pesan error di bawah form
+- **Reset**: Setelah sukses, reset semua input
+
+#### Toast Notification
+- Tampilkan toast success di top center
+- Auto dismiss setelah 3 detik
+- Pesan: "[Item] berhasil [ditambahkan/d"
+
+####iperbarui] State Management
+- Loading state: Spinner di tengah
+- Error state: Red alert box
+- Empty state: Ilustrasi dengan pesan
+
+### Perintah Build Frontend
+```bash
+# Install dependencies
+cd frontend && npm install
+
+# Development server
+npm run start
+
+# Production build
+npm run build
 ```
 
-### Controller Classes
-- Use `@RestController` and `@RequestMapping`
-- Use `@RequiredArgsConstructor` for dependency injection
-- Return `ResponseEntity<T>`
-
-### Imports Order
-1. Java standard libraries (`java.*`, `javax.*`)
-2. Third-party libraries (Spring, Lombok, etc.)
-3. Project internal imports
-
-### String Handling
-Always use `StringUtil.isBlank(str)` from `com.fadlimz.dompetku.config` instead of manual null/empty checks:
-
-```java
-import com.fadlimz.dompetku.config.StringUtil;
-
-// Good
-if (StringUtil.isBlank(keyword)) { ... }
-
-// Bad
-if (keyword == null || keyword.isEmpty()) { ... }
-```
-
-### Error Handling
-- Throw `RuntimeException` with descriptive messages for business logic errors
-- Use `Optional<T>` for repository queries that may return empty results
-- Global exception handler exists in `config/GlobalExceptionHandler`
-
-### Naming Conventions
-- **Classes**: PascalCase (e.g., `AccountService`, `DailyCashDto`)
-- **Methods**: camelCase (e.g., `findById`, `toEntity`)
-- **Variables**: camelCase (e.g., `accountCode`, `createdTime`)
-- **Constants**: UPPER_SNAKE_CASE (e.g., `MAX_RETRY_COUNT`)
-- **Packages**: lowercase with dots (e.g., `com.fadlimz.dompetku.master.account`)
-
-### Lombok Usage
-- Entities: Use `@Getter` and `@Setter` on class level
-- DTOs: Use `@Data`, `@EqualsAndHashCode(callSuper = true)`, `@NoArgsConstructor`, `@AllArgsConstructor`, `@SuperBuilder`
-- Controllers: Use `@RequiredArgsConstructor` for final field injection
-
-### Testing
-- Use JUnit 5 (`@Test` from `org.junit.jupiter.api`)
-- Test classes in `src/test/java` mirroring main package structure
-- Use Spring Boot test starter for integration tests
-
-### Security
-- All endpoints require authentication except `/api/auth/**` and user registration
-- Services must enforce user isolation by filtering on the current user
-- Use `UserService.getLoggedInUser()` to get the authenticated user
+### Halaman yang Tersedia
+- `/auth/login` - Halaman login dengan password visibility toggle
+- `/auth/register` - Halaman registrasi dengan password visibility toggle
+- `/dashboard` - Dashboard dengan sidebar, stats cards, quick actions
+- `/accounts` - Manajemen akun dengan card grid, add/edit modal
+- `/transactions` - Manajemen transaksi (placeholder)
+- `/categories` - Manajemen kategori (placeholder)
