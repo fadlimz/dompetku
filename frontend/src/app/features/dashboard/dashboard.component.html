@@ -1,0 +1,150 @@
+<div class="flex min-h-screen bg-gray-50">
+  <!-- Sidebar (Desktop: md and above) -->
+  <aside class="hidden md:flex w-64 bg-white shadow-lg flex-col fixed h-full">
+    <div class="p-6 border-b border-gray-100">
+      <h1 class="text-2xl font-bold text-blue-600">Dompetku</h1>
+    </div>
+        
+    <nav class="flex-1 p-4">
+      <ul class="space-y-2">
+        <li>
+          <a routerLink="/dashboard" routerLinkActive="bg-blue-50 text-blue-600" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+            <span class="text-xl">📊</span>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/accounts" routerLinkActive="bg-blue-50 text-blue-600" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+            <span class="text-xl">💳</span>
+            <span>Akun</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/transactions" routerLinkActive="bg-blue-50 text-blue-600" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+            <span class="text-xl">💰</span>
+            <span>Transaksi</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/categories" routerLinkActive="bg-blue-50 text-blue-600" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+            <span class="text-xl">🏷️</span>
+            <span>Kategori</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="p-4 border-t border-gray-100">
+      <button (click)="onLogout()" class="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors">
+        <span class="text-xl">🚪</span>
+        <span>Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col md:ml-64 pb-20 md:pb-0">
+    <!-- Top Bar -->
+    <header class="bg-white shadow-sm px-4 md:px-8 py-4 flex justify-between items-center">
+      <h2 class="text-lg md:text-xl font-semibold text-gray-800">Dashboard</h2>
+      <div class="text-gray-600">
+        <span>{{ userName }}</span>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="flex-1 p-4 md:p-8">
+      <!-- Welcome Card -->
+      <div class="bg-white rounded-2xl shadow-sm p-4 md:p-6 mb-4 md:mb-6">
+        <h3 class="text-base md:text-xl font-semibold text-gray-800 mb-1 md:mb-2">Selamat Datang di Dompetku! 👋</h3>
+        <p class="text-sm text-gray-500">Kelola keuangan pribadi Anda dengan mudah dan terorganisir.</p>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-4 md:mb-6">
+        <div class="bg-white rounded-2xl shadow-sm p-3 md:p-6">
+          <div class="flex items-center gap-2 md:gap-4">
+            <div class="w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-lg md:rounded-xl flex items-center justify-center text-lg md:text-2xl">📈</div>
+            <div>
+              <h4 class="text-xs md:text-sm text-gray-500">Pemasukan</h4>
+              <p class="text-base md:text-xl font-bold text-green-600">Rp 0</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm p-3 md:p-6">
+          <div class="flex items-center gap-2 md:gap-4">
+            <div class="w-10 h-10 md:w-12 md:h-12 bg-red-100 rounded-lg md:rounded-xl flex items-center justify-center text-lg md:text-2xl">📉</div>
+            <div>
+              <h4 class="text-xs md:text-sm text-gray-500">Pengeluaran</h4>
+              <p class="text-base md:text-xl font-bold text-red-600">Rp 0</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm p-3 md:p-6">
+          <div class="flex items-center gap-2 md:gap-4">
+            <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-lg md:rounded-xl flex items-center justify-center text-lg md:text-2xl">💵</div>
+            <div>
+              <h4 class="text-xs md:text-sm text-gray-500">Saldo</h4>
+              <p class="text-base md:text-xl font-bold text-blue-600">Rp 0</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm p-3 md:p-6">
+          <div class="flex items-center gap-2 md:gap-4">
+            <div class="w-10 h-10 md:w-12 md:h-12 bg-purple-100 rounded-lg md:rounded-xl flex items-center justify-center text-lg md:text-2xl">📝</div>
+            <div>
+              <h4 class="text-xs md:text-sm text-gray-500">Transaksi</h4>
+              <p class="text-base md:text-xl font-bold text-purple-600">0</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="bg-white rounded-2xl shadow-sm p-4 md:p-6">
+        <h3 class="text-base md:text-lg font-semibold text-gray-800 mb-3 md:mb-4">Aksi Cepat</h3>
+        <div class="flex flex-col md:flex-row flex-wrap gap-2 md:gap-4">
+          <button routerLink="/transactions" class="flex items-center justify-center gap-2 px-4 md:px-5 py-2 md:py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm md:text-base">
+            <span>➕</span>
+            <span>Transaksi Baru</span>
+          </button>
+          <button routerLink="/accounts" class="flex items-center justify-center gap-2 px-4 md:px-5 py-2 md:py-3 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-lg transition-colors text-sm md:text-base">
+            <span>💳</span>
+            <span>Akun Baru</span>
+          </button>
+          <button routerLink="/categories" class="flex items-center justify-center gap-2 px-4 md:px-5 py-2 md:py-3 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-lg transition-colors text-sm md:text-base">
+            <span>🏷️</span>
+            <span>Kategori Baru</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation (Mobile: below md) -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.1)] flex justify-around py-3 z-50">
+    <a routerLink="/dashboard" routerLinkActive="text-blue-500" class="flex flex-col items-center gap-1 text-gray-400 hover:text-blue-500 transition-colors">
+      <span class="text-xl">📊</span>
+      <span class="text-xs">Dashboard</span>
+    </a>
+    <a routerLink="/accounts" routerLinkActive="text-blue-500" class="flex flex-col items-center gap-1 text-gray-400 hover:text-blue-500 transition-colors">
+      <span class="text-xl">💳</span>
+      <span class="text-xs">Akun</span>
+    </a>
+    <a routerLink="/transactions" routerLinkActive="text-blue-500" class="flex flex-col items-center gap-1 text-gray-400 hover:text-blue-500 transition-colors">
+      <span class="text-xl">💰</span>
+      <span class="text-xs">Transaksi</span>
+    </a>
+    <a routerLink="/categories" routerLinkActive="text-blue-500" class="flex flex-col items-center gap-1 text-gray-400 hover:text-blue-500 transition-colors">
+      <span class="text-xl">🏷️</span>
+      <span class="text-xs">Kategori</span>
+    </a>
+    <button (click)="onLogout()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-red-500 transition-colors">
+      <span class="text-xl">🚪</span>
+      <span class="text-xs">Logout</span>
+    </button>
+  </nav>
+</div>

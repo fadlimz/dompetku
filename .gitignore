@@ -54,3 +54,9 @@ QWEN.md.bak
 
 ### Docker ###
 docker-compose.override.yml
+
+### Angular ###
+frontend/dist/
+frontend/.angular/
+frontend/node_modules/
+frontend/.nx/

@@ -20,5 +20,5 @@ COPY --from=build /app/build/libs/*.jar app.jar
 
 EXPOSE 7860
 
-# Optimasi RAM saat menjalankan Java di server kecil
-ENTRYPOINT ["java", "-Xmx256m", "-Xss512k", "-jar", "app.jar"]
+# Optimasi RAM saat menjalankan Java di server Hugging Face (16GB RAM available)
+ENTRYPOINT ["java", "-Xmx1g", "-Xss512k", "-jar", "app.jar"]
