@@ -7,12 +7,12 @@
 <!-- Stats Grid -->
 <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 mb-4 md:mb-6">
   <!-- Saldo - colspan 2 di mobile -->
-  <div class="col-span-2 md:col-span-1 bg-white rounded-2xl shadow-sm p-3 md:p-6">
+  <div class="col-span-2 md:col-span-1 bg-white rounded-2xl shadow-sm p-3 md:p-6 cursor-pointer hover:shadow-md transition-shadow" (click)="openBalanceDialog()">
     <div class="flex items-center gap-2 md:gap-4">
       <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-lg md:rounded-xl flex items-center justify-center text-lg md:text-2xl">💵</div>
       <div>
         <h4 class="text-xs md:text-sm text-gray-500">Saldo</h4>
-        <p class="text-base md:text-xl font-bold text-blue-600">Rp 0</p>
+        <p class="text-base md:text-xl font-bold text-blue-600">Rp {{ formatNumber(totalBalance) }}</p>
       </div>
     </div>
   </div>
