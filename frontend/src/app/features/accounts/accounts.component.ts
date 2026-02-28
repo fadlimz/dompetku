@@ -28,6 +28,7 @@ export class AccountsComponent implements OnInit {
   
   // Form fields
   accountName = '';
+  accountCode = '';
   activeFlag = true;
   
   // Toast state
@@ -69,11 +70,13 @@ export class AccountsComponent implements OnInit {
       this.isEditMode = true;
       this.selectedAccount = account;
       this.accountName = account.accountName;
+      this.accountCode = account.accountCode;
       this.activeFlag = account.activeFlag === 'Active';
     } else {
       this.isEditMode = false;
       this.selectedAccount = null;
       this.accountName = '';
+      this.accountCode = '';
       this.activeFlag = true;
     }
   }
@@ -95,6 +98,7 @@ export class AccountsComponent implements OnInit {
     this.submitError = '';
 
     const accountData = {
+      accountCode: this.accountCode.trim(),
       accountName: this.accountName.trim(),
       activeFlag: this.activeFlag ? 'Active' : 'Inactive'
     };
