@@ -31,7 +31,7 @@ export const routes: Routes = [
       },
       {
         path: 'transactions',
-        loadChildren: () => import('./features/transactions/transactions.routes').then(m => m.transactionsRoutes)
+        loadChildren: () => import('./features/transactions/daily-cash/daily-cash.routes').then(m => m.dailyCashRoutes)
       },
       {
         path: 'categories',
