@@ -13,7 +13,7 @@ export class CategoryService {
   constructor(private http: HttpClient) {}
 
   getAll(keyword?: string): Observable<Category[]> {
-    const params = keyword ? { keyword } : {};
+    const params = keyword ? { keyword } : undefined;
     return this.http.get<Category[]>(this.API_URL, { params });
   }
 
