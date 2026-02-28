@@ -16,6 +16,8 @@ import { Category } from '../../../core/models/category.model';
 export class DailyCashComponent implements OnInit {
   accounts: Account[] = [];
   categories: Category[] = [];
+  currentMonth: Date = new Date();
+  calendarDays: { date: Date; isCurrentMonth: boolean; isToday: boolean; hasTransaction: boolean }[] = [];
 
   constructor(
     private accountService: AccountService,
@@ -23,8 +25,73 @@ export class DailyCashComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.generateCalendar();
     this.loadAccounts();
     this.loadCategories();
+  }
+
+  get currentMonthName(): string {
+    return this.currentMonth.toLocaleString('id-ID', { month: 'long', year: 'numeric' });
+  }
+
+  previousMonth(): void {
+    this.currentMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() - 1, 1);
+    this.generateCalendar();
+  }
+
+  nextMonth(): void {
+    this.currentMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() + 1, 1);
+    this.generateCalendar();
+  }
+
+  generateCalendar(): void {
+    const year = this.currentMonth.getFullYear();
+    const month = this.currentMonth.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const today = new Date();
+    
+    this.calendarDays = [];
+    
+    // Days from previous month
+    const startDay = firstDay.getDay();
+    for (let i = startDay - 1; i >= 0; i--) {
+      const date = new Date(year, month, -i);
+      this.calendarDays.push({
+        date,
+        isCurrentMonth: false,
+        isToday: false,
+        hasTransaction: false
+      });
+    }
+    
+    // Days of current month
+    for (let i = 1; i <= lastDay.getDate(); i++) {
+      const date = new Date(year, month, i);
+      const isToday = date.toDateString() === today.toDateString();
+      this.calendarDays.push({
+        date,
+        isCurrentMonth: true,
+        isToday,
+        hasTransaction: false
+      });
+    }
+    
+    // Days from next month
+    const remaining = 42 - this.calendarDays.length;
+    for (let i = 1; i <= remaining; i++) {
+      const date = new Date(year, month + 1, i);
+      this.calendarDays.push({
+        date,
+        isCurrentMonth: false,
+        isToday: false,
+        hasTransaction: false
+      });
+    }
+  }
+
+  selectDate(date: Date): void {
+    // Will be implemented in Task 4
   }
 
   loadAccounts(): void {
