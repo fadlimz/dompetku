@@ -58,3 +58,54 @@
     </button>
   </div>
 </div>
+
+<!-- Balance Detail Dialog -->
+@if (showBalanceDialog) {
+  <div class="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50" (click)="closeBalanceDialog()">
+    <div class="bg-white rounded-t-2xl md:rounded-2xl w-full md:max-w-md max-h-[80vh] overflow-hidden" (click)="$event.stopPropagation()">
+      <div class="p-4 border-b">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold">Rincian Saldo</h3>
+          <button (click)="closeBalanceDialog()" class="p-2 hover:bg-gray-100 rounded-lg">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div class="p-4 overflow-y-auto max-h-[60vh]">
+        @if (isLoadingBalances) {
+          <div class="flex justify-center py-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          </div>
+        } @else if (balances.length === 0) {
+          <div class="text-center py-8 text-gray-500">
+            <p>Belum ada saldo</p>
+          </div>
+        } @else {
+          @for (balance of balances; track balance.id) {
+            <div class="p-3 bg-gray-50 rounded-lg mb-2">
+              <div class="flex justify-between items-center">
+                <div>
+                  <p class="font-medium">{{ balance.accountName }}</p>
+                </div>
+                <div class="text-blue-600 font-semibold">
+                  Rp {{ formatNumber(balance.value) }}
+                </div>
+              </div>
+            </div>
+          }
+          
+          <!-- Total -->
+          <div class="p-3 bg-blue-50 rounded-lg mt-4">
+            <div class="flex justify-between items-center">
+              <p class="font-semibold text-gray-800">Total</p>
+              <p class="font-bold text-blue-600">Rp {{ formatNumber(totalBalance) }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
