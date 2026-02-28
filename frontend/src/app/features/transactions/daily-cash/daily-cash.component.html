@@ -36,4 +36,46 @@
       </div>
     }
   </div>
+
+  <!-- Date Dialog -->
+  @if (showDateDialog && selectedDate) {
+    <div class="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50" (click)="closeDateDialog()">
+      <div class="bg-white rounded-t-2xl md:rounded-2xl w-full md:max-w-md max-h-[80vh] overflow-hidden" (click)="$event.stopPropagation()">
+        <div class="p-4 border-b">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold">
+              {{ selectedDate | date:'dd MMMM yyyy' }}
+            </h3>
+            <button (click)="closeDateDialog()" class="p-2 hover:bg-gray-100 rounded-lg">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+        <div class="p-4 overflow-y-auto max-h-[60vh]">
+          @if (dailyCashForSelectedDate.length === 0) {
+            <div class="text-center py-8 text-gray-500">
+              <p>Belum ada transaksi di tanggal ini</p>
+            </div>
+          } @else {
+            @for (dc of dailyCashForSelectedDate; track dc.id) {
+              <div class="p-3 bg-gray-50 rounded-lg mb-2 cursor-pointer hover:bg-gray-100" (click)="openFormModal(dc)">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <p class="font-medium">{{ dc.account?.accountName }}</p>
+                    <p class="text-sm text-gray-500">{{ dc.category?.categoryName }}</p>
+                  </div>
+                  <div [class.text-green-600]="dc.cashflowFlag === 'In'" [class.text-red-600]="dc.cashflowFlag === 'Out'">
+                    {{ dc.cashflowFlag === 'In' ? '+' : '-' }} {{ dc.value | number:'1.0-0' }}
+                  </div>
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    </div>
+  }
 </div>

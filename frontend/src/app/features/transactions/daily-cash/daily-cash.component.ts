@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AccountService } from '../../../core/services/account.service';
 import { CategoryService } from '../../../core/services/category.service';
+import { TransactionService } from '../../../core/services/transaction.service';
 import { Account } from '../../../core/models/account.model';
 import { Category } from '../../../core/models/category.model';
+import { DailyCash } from '../../../core/models/transaction.model';
 
 @Component({
   selector: 'app-daily-cash',
@@ -18,14 +20,20 @@ export class DailyCashComponent implements OnInit {
   categories: Category[] = [];
   currentMonth: Date = new Date();
   calendarDays: { date: Date; isCurrentMonth: boolean; isToday: boolean; hasTransaction: boolean }[] = [];
+  dailyCashList: DailyCash[] = [];
+  selectedDate: Date | null = null;
+  dailyCashForSelectedDate: DailyCash[] = [];
+  showDateDialog = false;
 
   constructor(
     private accountService: AccountService,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private transactionService: TransactionService
   ) {}
 
   ngOnInit(): void {
     this.generateCalendar();
+    this.loadDailyCash();
     this.loadAccounts();
     this.loadCategories();
   }
@@ -91,7 +99,9 @@ export class DailyCashComponent implements OnInit {
   }
 
   selectDate(date: Date): void {
-    // Will be implemented in Task 4
+    this.selectedDate = date;
+    this.loadDailyCashForDate(date);
+    this.showDateDialog = true;
   }
 
   loadAccounts(): void {
@@ -112,5 +122,43 @@ export class DailyCashComponent implements OnInit {
           .sort((a: Category, b: Category) => a.categoryName.localeCompare(b.categoryName));
       }
     });
+  }
+
+  loadDailyCash(): void {
+    this.transactionService.getAll().subscribe({
+      next: (data) => {
+        this.dailyCashList = data;
+        this.updateCalendarHasTransaction();
+      }
+    });
+  }
+
+  updateCalendarHasTransaction(): void {
+    const dateMap = new Map<string, boolean>();
+    this.dailyCashList.forEach(dc => {
+      if (dc.transactionDate) {
+        const dateStr = new Date(dc.transactionDate).toDateString();
+        dateMap.set(dateStr, true);
+      }
+    });
+    
+    this.calendarDays.forEach(day => {
+      day.hasTransaction = dateMap.has(day.date.toDateString());
+    });
+  }
+
+  loadDailyCashForDate(date: Date): void {
+    this.dailyCashForSelectedDate = this.dailyCashList.filter(dc => {
+      if (!dc.transactionDate) return false;
+      return new Date(dc.transactionDate).toDateString() === date.toDateString();
+    });
+  }
+
+  closeDateDialog(): void {
+    this.showDateDialog = false;
+  }
+
+  openFormModal(dc?: DailyCash): void {
+    // Will be implemented in Task 5
   }
 }
