@@ -157,14 +157,16 @@ frontend/
 │   │   │   ├── guards/        # Route guards (auth.guard.ts)
 │   │   │   ├── interceptors/  # HTTP interceptors (auth.interceptor.ts)
 │   │   │   ├── models/        # TypeScript interfaces
-│   │   │   └── services/      # API services
+│   │   │   └── services/      # API services (auth, account, transaction, category, transfer)
 │   │   ├── features/         # Feature modules (lazy loaded)
 │   │   │   ├── auth/          # Login & Register
 │   │   │   ├── dashboard/    # Dashboard page
 │   │   │   ├── accounts/     # Account management
+│   │   │   ├── transfer/     # Transfer (AccountBalanceTransfer)
 │   │   │   ├── transactions/ # Transaction management
 │   │   │   └── categories/   # Category management
-│   │   ├── shared/           # Shared components, directives, pipes
+│   │   ├── shared/           # Shared components
+│   │   │   └── layout/       # MainLayout (sidebar, header, bottom nav)
 │   │   ├── app.component.ts  # Root component
 │   │   ├── app.config.ts     # App configuration
 │   │   └── app.routes.ts     # Route definitions
@@ -180,8 +182,31 @@ frontend/
 1. **Standalone Components**: Semua komponen menggunakan standalone, tanpa NgModule
 2. **Lazy Loading**: Setiap feature di-load secara lazy melalui routes
 3. **TailwindCSS**: Styling menggunakan utility classes TailwindCSS
-4. **Services**: Satu service per domain (auth, account, transaction, category)
+4. **Services**: Satu service per domain (auth, account, transaction, category, transfer)
 5. **Models**: TypeScript interfaces untuk type safety
+6. **Shared Layout**: Gunakan `MainLayoutComponent` sebagai parent wrapper untuk semua halaman yang memerlukan navbar. Ini memastikan konsisten dan mudah maintenance.
+
+#### Route Structure dengan MainLayout
+```typescript
+// app.routes.ts
+{
+  path: '',
+  component: MainLayoutComponent,  // Parent wrapper
+  canActivate: [authGuard],
+  children: [
+    { path: 'dashboard', loadChildren: () => ... },
+    { path: 'accounts', loadChildren: () => ... },
+    { path: 'transfer', loadChildren: () => ... },
+    { path: 'transactions', loadChildren: () => ... },
+    { path: 'categories', loadChildren: () => ... },
+  ]
+}
+```
+
+#### Navbar Structure
+- **Desktop (Sidebar)**: Dashboard, Transaksi, Transfer, Akun, Kategori
+- **Mobile (Bottom Nav)**: Dashboard, Transaksi, Transfer, Akun, Kategori
+- **Top Bar**: Page title + User dropdown (username + logout)
 
 ### Pattern Master Data (CRUD)
 Untuk halaman master data seperti Akun, Kategori, dll, gunakan pattern berikut:
@@ -193,6 +218,12 @@ Untuk halaman master data seperti Akun, Kategori, dll, gunakan pattern berikut:
   - Desktop: Full button dengan text (`px-6 py-3 rounded-full`)
 - **Sort**: Urutkan data berdasarkan nama secara Ascending (A-Z)
 
+#### Dashboard Stats Cards
+- 3 cards: Saldo, Pemasukan, Pengeluaran
+- Urutan: Saldo (kiri), Pemasukan (kanan-bawah), Pengeluaran (kanan-bawah)
+- Mobile: Saldo colspan=2 (full width), Pemasukan & Pengeluaran di baris kedua
+- Desktop: 3 kolom sejajar
+
 #### Card Display
 - Tampilkan nama dan status aktif saja (tidak perlu menampilkan kode)
 - Label status: "Aktif" (jika Active) / "Tidak Aktif" (jika Inactive)
@@ -200,6 +231,7 @@ Untuk halaman master data seperti Akun, Kategori, dll, gunakan pattern berikut:
 
 #### Modal Form (Add/Edit)
 - Gunakan satu modal untuk Add dan Edit (mode dinamis)
+- **Input Kode**: Untuk entity yang memiliki kode (contoh: AccountCode di Akun)
 - **Input Nama**: Text input standar
 - **Active Flag**: Toggle switch aesthetic (bukan checkbox standar)
   - Default: checked (Aktif)
@@ -232,7 +264,8 @@ npm run build
 ### Halaman yang Tersedia
 - `/auth/login` - Halaman login dengan password visibility toggle
 - `/auth/register` - Halaman registrasi dengan password visibility toggle
-- `/dashboard` - Dashboard dengan sidebar, stats cards, quick actions
+- `/dashboard` - Dashboard dengan sidebar, stats cards (Saldo, Pemasukan, Pengeluaran), quick actions
 - `/accounts` - Manajemen akun dengan card grid, add/edit modal
+- `/transfer` - Transfer antar akun (AccountBalanceTransfer)
 - `/transactions` - Manajemen transaksi (placeholder)
 - `/categories` - Manajemen kategori (placeholder)
