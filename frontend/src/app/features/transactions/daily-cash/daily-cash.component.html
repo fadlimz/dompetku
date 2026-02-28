@@ -133,7 +133,6 @@
             <select 
               [(ngModel)]="formAccountId" 
               name="accountId"
-              (change)="onAccountChange()"
               class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
               <option value="">Pilih Akun</option>
               @for (account of accounts; track account.id) {
@@ -150,6 +149,7 @@
             <select 
               [(ngModel)]="formCategoryId" 
               name="categoryId"
+              (change)="onCategoryChange()"
               class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
               <option value="">Pilih Kategori</option>
               @for (category of categories; track category.id) {

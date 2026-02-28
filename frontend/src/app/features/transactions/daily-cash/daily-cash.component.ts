@@ -232,10 +232,10 @@ export class DailyCashComponent implements OnInit {
     this.submitError = '';
   }
 
-  onAccountChange(): void {
-    const account = this.accounts.find(a => a.id === this.formAccountId);
-    if (account) {
-      this.formCashflowFlag = account.cashflowFlag || '';
+  onCategoryChange(): void {
+    const category = this.categories.find(c => c.id === this.formCategoryId);
+    if (category) {
+      this.formCashflowFlag = category.cashFlowFlag || '';
     }
   }
 
@@ -249,6 +249,7 @@ export class DailyCashComponent implements OnInit {
       transactionDate: new Date(this.formDate),
       account: { id: this.formAccountId },
       category: { id: this.formCategoryId },
+      transactionCode: { transactionCode: 'TR01' },
       value: this.parseFormattedNumber(this.formValue),
       cashflowFlag: this.formCashflowFlag,
       description: this.formDescription
