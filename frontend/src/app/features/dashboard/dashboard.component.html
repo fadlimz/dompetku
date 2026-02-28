@@ -47,8 +47,32 @@
     <!-- Top Bar -->
     <header class="bg-white shadow-sm px-4 md:px-8 py-4 flex justify-between items-center">
       <h2 class="text-lg md:text-xl font-semibold text-gray-800">Dashboard</h2>
-      <div class="text-gray-600">
-        <span>{{ userName }}</span>
+      
+      <!-- User Dropdown -->
+      <div class="relative">
+        <button 
+          (click)="toggleDropdown()" 
+          class="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+        >
+          <span>{{ userName }}</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        
+        <!-- Dropdown Menu -->
+        <div 
+          *ngIf="isDropdownOpen" 
+          class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50"
+        >
+          <button 
+            (click)="onLogout(); closeDropdown()" 
+            class="flex items-center gap-3 px-4 py-2 w-full text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+          >
+            <span class="text-lg">🚪</span>
+            <span>Logout</span>
+          </button>
+        </div>
       </div>
     </header>
 
