@@ -138,7 +138,7 @@
               <option value="">Pilih Akun</option>
               @for (account of accounts; track account.id) {
                 <option [value]="account.id">
-                  {{ account.accountName }} ({{ account.cashflowFlag }})
+                  {{ account.accountName }}
                 </option>
               }
             </select>
