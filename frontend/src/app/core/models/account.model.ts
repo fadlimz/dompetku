@@ -4,4 +4,5 @@ export interface Account extends BaseEntity {
   accountCode: string;
   accountName: string;
   activeFlag: string;
+  cashflowFlag?: string;
 }

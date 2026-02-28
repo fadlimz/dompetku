@@ -24,6 +24,24 @@ export class DailyCashComponent implements OnInit {
   selectedDate: Date | null = null;
   dailyCashForSelectedDate: DailyCash[] = [];
   showDateDialog = false;
+  selectedDailyCash: DailyCash | null = null;
+
+  // Form modal properties
+  showFormModal = false;
+  isEditMode = false;
+
+  // Form fields
+  formDate = '';
+  formAccountId = '';
+  formCategoryId = '';
+  formValue = '';
+  formDescription = '';
+  formCashflowFlag = '';
+
+  isSubmitting = false;
+  submitError = '';
+  showToast = false;
+  toastMessage = '';
 
   constructor(
     private accountService: AccountService,
@@ -158,7 +176,105 @@ export class DailyCashComponent implements OnInit {
     this.showDateDialog = false;
   }
 
+  formatDateForInput(date: Date): string {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  parseFormattedNumber(value: string): number {
+    return parseFloat(value.replace(/\./g, ''));
+  }
+
+  formatNumber(value: number): string {
+    return new Intl.NumberFormat('id-ID').format(value || 0);
+  }
+
   openFormModal(dc?: DailyCash): void {
-    // Will be implemented in Task 5
+    if (dc) {
+      this.isEditMode = true;
+      this.selectedDailyCash = dc;
+      this.formDate = this.formatDateForInput(new Date(dc.transactionDate!));
+      this.formAccountId = dc.account?.id || '';
+      this.formCategoryId = dc.category?.id || '';
+      this.formValue = this.formatNumber(dc.value || 0);
+      this.formDescription = dc.description || '';
+      this.formCashflowFlag = dc.cashflowFlag || '';
+    } else {
+      this.isEditMode = false;
+      this.selectedDailyCash = null;
+      this.formDate = this.selectedDate ? this.formatDateForInput(this.selectedDate) : this.formatDateForInput(new Date());
+      this.formAccountId = '';
+      this.formCategoryId = '';
+      this.formValue = '';
+      this.formDescription = '';
+      this.formCashflowFlag = '';
+    }
+    this.submitError = '';
+    this.showFormModal = true;
+  }
+
+  closeFormModal(): void {
+    this.showFormModal = false;
+    this.submitError = '';
+  }
+
+  onAccountChange(): void {
+    const account = this.accounts.find(a => a.id === this.formAccountId);
+    if (account) {
+      this.formCashflowFlag = account.cashflowFlag || '';
+    }
+  }
+
+  onSubmit(): void {
+    if (!this.formAccountId || !this.formCategoryId || !this.formValue) {
+      this.submitError = 'Mohon lengkapi semua field wajib';
+      return;
+    }
+
+    const payload: any = {
+      transactionDate: new Date(this.formDate),
+      account: { id: this.formAccountId },
+      category: { id: this.formCategoryId },
+      value: this.parseFormattedNumber(this.formValue),
+      cashflowFlag: this.formCashflowFlag,
+      description: this.formDescription
+    };
+
+    this.isSubmitting = true;
+
+    if (this.isEditMode && this.selectedDailyCash) {
+      this.transactionService.update(this.selectedDailyCash.id, payload).subscribe({
+        next: () => this.handleSuccess('Transaksi berhasil diperbarui'),
+        error: (err) => {
+          this.isSubmitting = false;
+          this.submitError = err.error?.message || 'Gagal memperbarui transaksi';
+        }
+      });
+    } else {
+      this.transactionService.create(payload).subscribe({
+        next: () => this.handleSuccess('Transaksi berhasil ditambahkan'),
+        error: (err) => {
+          this.isSubmitting = false;
+          this.submitError = err.error?.message || 'Gagal menambahkan transaksi';
+        }
+      });
+    }
+  }
+
+  handleSuccess(message: string): void {
+    this.isSubmitting = false;
+    this.closeFormModal();
+    this.closeDateDialog();
+    this.loadDailyCash();
+    this.showToastMessage(message);
+  }
+
+  showToastMessage(message: string): void {
+    this.toastMessage = message;
+    this.showToast = true;
+    setTimeout(() => this.showToast = false, 3000);
   }
 }
