@@ -8,7 +8,7 @@ import { DailyCash } from '../../core/models/transaction.model';
   providedIn: 'root'
 })
 export class TransactionService {
-  private readonly API_URL = `${environment.apiUrl}/daily-cash`;
+  private readonly API_URL = `${environment.apiUrl}/transactions/daily-cash`;
 
   constructor(private http: HttpClient) {}
 
