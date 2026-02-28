@@ -44,6 +44,7 @@ out/
 *.bin
 
 ### AI Config Files ###
+AGENTS.md
 GEMINI.md
 QWEN.md
 QWEN.md.bak
@@ -63,3 +64,6 @@ frontend/.nx/
 
 ### Documentation ###
 docs/
+
+### Worktrees ###
+.worktrees/
