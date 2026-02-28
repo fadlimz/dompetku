@@ -1,0 +1,107 @@
+<div class="flex min-h-screen bg-gray-50">
+  <!-- Sidebar (Desktop: md and above) -->
+  <aside class="hidden md:flex w-64 bg-white shadow-lg flex-col fixed h-full">
+    <div class="p-6 border-b border-gray-100">
+      <h1 class="text-2xl font-bold text-blue-600">Dompetku</h1>
+    </div>
+        
+    <nav class="flex-1 p-4">
+      <ul class="space-y-2">
+        <li>
+          <a routerLink="/dashboard" routerLinkActive="bg-blue-50 text-blue-600" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+            <span class="text-xl">📊</span>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/transactions" routerLinkActive="bg-blue-50 text-blue-600" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+            <span class="text-xl">💰</span>
+            <span>Transaksi</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/accounts" [routerLinkActiveOptions]="{exact: false}" routerLinkActive="bg-blue-50 text-blue-600" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+            <span class="text-xl">🔄</span>
+            <span>Transfer</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/accounts" routerLinkActive="bg-blue-50 text-blue-600" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+            <span class="text-xl">💳</span>
+            <span>Akun</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="/categories" routerLinkActive="bg-blue-50 text-blue-600" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+            <span class="text-xl">🏷️</span>
+            <span>Kategori</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col md:ml-64 pb-20 md:pb-0">
+    <!-- Top Bar -->
+    <header class="bg-white shadow-sm px-4 md:px-8 py-4 flex justify-between items-center">
+      <h2 class="text-lg md:text-xl font-semibold text-gray-800">{{ pageTitle }}</h2>
+      
+      <!-- User Dropdown -->
+      <div class="relative">
+        <button 
+          (click)="toggleDropdown()" 
+          class="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+        >
+          <span>{{ userName }}</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        
+        <!-- Dropdown Menu -->
+        <div 
+          *ngIf="isDropdownOpen" 
+          class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50"
+        >
+          <button 
+            (click)="onLogout(); closeDropdown()" 
+            class="flex items-center gap-3 px-4 py-2 w-full text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+          >
+            <span class="text-lg">🚪</span>
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <div class="flex-1 p-4 md:p-8">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation (Mobile: below md) -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.1)] flex justify-around py-3 z-50">
+    <a routerLink="/dashboard" routerLinkActive="text-blue-500" class="flex flex-col items-center gap-1 text-gray-400 hover:text-blue-500 transition-colors">
+      <span class="text-xl">📊</span>
+      <span class="text-xs">Dashboard</span>
+    </a>
+    <a routerLink="/transactions" routerLinkActive="text-blue-500" class="flex flex-col items-center gap-1 text-gray-400 hover:text-blue-500 transition-colors">
+      <span class="text-xl">💰</span>
+      <span class="text-xs">Transaksi</span>
+    </a>
+    <a routerLink="/accounts" routerLinkActive="text-blue-500" class="flex flex-col items-center gap-1 text-gray-400 hover:text-blue-500 transition-colors">
+      <span class="text-xl">🔄</span>
+      <span class="text-xs">Transfer</span>
+    </a>
+    <a routerLink="/accounts" routerLinkActive="text-blue-500" class="flex flex-col items-center gap-1 text-gray-400 hover:text-blue-500 transition-colors">
+      <span class="text-xl">💳</span>
+      <span class="text-xs">Akun</span>
+    </a>
+    <a routerLink="/categories" routerLinkActive="text-blue-500" class="flex flex-col items-center gap-1 text-gray-400 hover:text-blue-500 transition-colors">
+      <span class="text-xl">🏷️</span>
+      <span class="text-xs">Kategori</span>
+    </a>
+  </nav>
+</div>

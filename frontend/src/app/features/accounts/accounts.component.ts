@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AccountService } from '../../core/services/account.service';
-import { AuthService } from '../../core/services/auth.service';
 import { Account } from '../../core/models/account.model';
 
 @Component({
@@ -36,9 +35,7 @@ export class AccountsComponent implements OnInit {
   toastMessage = '';
 
   constructor(
-    private accountService: AccountService,
-    private authService: AuthService,
-    private router: Router
+    private accountService: AccountService
   ) {}
 
   ngOnInit(): void {
@@ -139,10 +136,5 @@ export class AccountsComponent implements OnInit {
     setTimeout(() => {
       this.showToast = false;
     }, 3000);
-  }
-
-  onLogout(): void {
-    this.authService.logout();
-    this.router.navigate(['/auth/login']);
   }
 }

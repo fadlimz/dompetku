@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { MainLayoutComponent } from './shared/layout/main-layout.component';
 
 export const routes: Routes = [
   {
@@ -12,24 +13,27 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then(m => m.authRoutes)
   },
   {
-    path: 'dashboard',
+    path: '',
+    component: MainLayoutComponent,
     canActivate: [authGuard],
-    loadChildren: () => import('./features/dashboard/dashboard.routes').then(m => m.dashboardRoutes)
-  },
-  {
-    path: 'accounts',
-    canActivate: [authGuard],
-    loadChildren: () => import('./features/accounts/accounts.routes').then(m => m.accountsRoutes)
-  },
-  {
-    path: 'transactions',
-    canActivate: [authGuard],
-    loadChildren: () => import('./features/transactions/transactions.routes').then(m => m.transactionsRoutes)
-  },
-  {
-    path: 'categories',
-    canActivate: [authGuard],
-    loadChildren: () => import('./features/categories/categories.routes').then(m => m.categoriesRoutes)
+    children: [
+      {
+        path: 'dashboard',
+        loadChildren: () => import('./features/dashboard/dashboard.routes').then(m => m.dashboardRoutes)
+      },
+      {
+        path: 'accounts',
+        loadChildren: () => import('./features/accounts/accounts.routes').then(m => m.accountsRoutes)
+      },
+      {
+        path: 'transactions',
+        loadChildren: () => import('./features/transactions/transactions.routes').then(m => m.transactionsRoutes)
+      },
+      {
+        path: 'categories',
+        loadChildren: () => import('./features/categories/categories.routes').then(m => m.categoriesRoutes)
+      }
+    ]
   },
   {
     path: '**',
