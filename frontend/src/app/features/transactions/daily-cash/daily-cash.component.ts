@@ -43,6 +43,9 @@ export class DailyCashComponent implements OnInit {
   showToast = false;
   toastMessage = '';
 
+  isLoading = false;
+  errorMessage = '';
+
   constructor(
     private accountService: AccountService,
     private categoryService: CategoryService,
@@ -143,10 +146,18 @@ export class DailyCashComponent implements OnInit {
   }
 
   loadDailyCash(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
     this.transactionService.getAll().subscribe({
       next: (data) => {
         this.dailyCashList = data;
         this.updateCalendarHasTransaction();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.errorMessage = 'Gagal memuat data transaksi';
+        this.isLoading = false;
+        console.error('Error loading daily cash:', err);
       }
     });
   }
