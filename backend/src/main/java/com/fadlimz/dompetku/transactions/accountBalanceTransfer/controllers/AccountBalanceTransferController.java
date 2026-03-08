@@ -17,8 +17,18 @@ public class AccountBalanceTransferController {
     private final AccountBalanceTransferService transferService;
 
     @GetMapping
-    public ResponseEntity<List<AccountBalanceTransferDto>> getAll() {
-        return ResponseEntity.ok(AccountBalanceTransferDto.fromEntityList(transferService.findAll()));
+    public ResponseEntity<List<AccountBalanceTransferDto>> getAll(
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month
+    ) {
+        if ((year == null) != (month == null)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<AccountBalanceTransfer> data = (year != null && month != null)
+                ? transferService.findByMonth(year, month)
+                : transferService.findAll();
+        return ResponseEntity.ok(AccountBalanceTransferDto.fromEntityList(data));
     }
 
     @GetMapping("/{id}")

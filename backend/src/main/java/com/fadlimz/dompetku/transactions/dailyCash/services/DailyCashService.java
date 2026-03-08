@@ -20,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Service
 @Transactional
@@ -212,5 +215,24 @@ public class DailyCashService extends BaseService<DailyCash> {
     @Override
     public List<DailyCash> findAll() {
         return dailyCashRepository.findByUser(userService.getLoggedInUser());
+    }
+
+    public List<DailyCash> findByMonth(Integer year, Integer month) {
+        validateMonth(month);
+        LocalDate start = LocalDate.of(year, month, 1);
+        LocalDate end = start.plusMonths(1);
+        Date startDate = Date.from(start.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date endDate = Date.from(end.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return dailyCashRepository.findByUserAndTransactionDateGreaterThanEqualAndTransactionDateLessThan(
+                userService.getLoggedInUser(),
+                startDate,
+                endDate
+        );
+    }
+
+    private void validateMonth(Integer month) {
+        if (month == null || month < 1 || month > 12) {
+            throw new IllegalArgumentException("month harus di antara 1 dan 12");
+        }
     }
 }

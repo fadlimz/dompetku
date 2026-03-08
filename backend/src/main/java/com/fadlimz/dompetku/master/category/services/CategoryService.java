@@ -61,8 +61,8 @@ public class CategoryService extends BaseService<Category> {
         existing.setCategoryCode(dto.getCategoryCode());
         existing.setCategoryName(dto.getCategoryName());
         existing.setCashFlowFlag(dto.getCashFlowFlag());
-        existing.setActiveFlag(dto.getActiveFlag());
-        
+        existing.setCategoryType(dto.getCategoryType());
+
         return update(existing);
     }
 

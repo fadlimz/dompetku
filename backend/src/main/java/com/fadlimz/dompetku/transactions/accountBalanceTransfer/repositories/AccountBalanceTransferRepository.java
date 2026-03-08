@@ -7,9 +7,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Date;
 
 @Repository
 public interface AccountBalanceTransferRepository extends JpaRepository<AccountBalanceTransfer, String> {
     List<AccountBalanceTransfer> findByUser(User user);
+    List<AccountBalanceTransfer> findByUserAndTransactionDateGreaterThanEqualAndTransactionDateLessThan(User user, Date startDate, Date endDate);
     Optional<AccountBalanceTransfer> findByIdAndUser(String id, User user);
 }

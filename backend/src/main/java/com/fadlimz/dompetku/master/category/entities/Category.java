@@ -25,8 +25,8 @@ public class Category extends BaseEntity {
     @Column(name = "cash_flow_flag", length = 7, nullable = false)
     private String cashFlowFlag;
 
-    @Column(name = "active_flag", length = 8, nullable = false)
-    private String activeFlag;
+    @Column(name = "category_type", length = 8, nullable = false)
+    private String categoryType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

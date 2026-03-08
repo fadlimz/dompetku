@@ -20,5 +20,12 @@ COPY --from=build /app/build/libs/*.jar app.jar
 
 EXPOSE 7860
 
+# Environment variables untuk konfigurasi aplikasi
+ENV SERVER_PORT=7860
+ENV SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/dompetku
+ENV SPRING_DATASOURCE_USERNAME=postgres
+ENV SPRING_DATASOURCE_PASSWORD=password
+ENV JWT_SECRET=your-secret-key-here
+
 # Optimasi RAM saat menjalankan Java di server Hugging Face (16GB RAM available)
 ENTRYPOINT ["java", "-Xmx1g", "-Xss512k", "-jar", "app.jar"]

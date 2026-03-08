@@ -20,7 +20,7 @@ public class CategoryDto extends BaseDto {
     public String categoryCode;
     public String categoryName;
     public String cashFlowFlag;
-    public String activeFlag;
+    public String categoryType;
 
     /**
      * Converts this DTO to an Entity
@@ -30,7 +30,7 @@ public class CategoryDto extends BaseDto {
         category.setCategoryCode(categoryCode);
         category.setCategoryName(categoryName);
         category.setCashFlowFlag(cashFlowFlag);
-        category.setActiveFlag(activeFlag);
+        category.setCategoryType(categoryType);
 
         return category;
     }
@@ -44,7 +44,7 @@ public class CategoryDto extends BaseDto {
         dto.categoryCode = entity.getCategoryCode();
         dto.categoryName = entity.getCategoryName();
         dto.cashFlowFlag = entity.getCashFlowFlag();
-        dto.activeFlag = entity.getActiveFlag();
+        dto.categoryType = entity.getCategoryType();
 
         return dto;
     }

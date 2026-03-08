@@ -3,6 +3,7 @@ package com.fadlimz.dompetku.config;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -15,9 +16,8 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    // Harusnya ini ditaruh di application.properties, tapi buat demo gpp ditaruh sini dulu.
-    // Key harus base64 encoded dan cukup panjang (minimal 256 bit untuk HS256)
-    private static final String SECRET_KEY = "357638792F423F4528482B4D6251655468576D5A7134743777217A25432A462D"; 
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -33,7 +33,7 @@ public class JwtUtil {
     }
 
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -46,7 +46,7 @@ public class JwtUtil {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 jam
+                .setExpiration(new Date(System.currentTimeMillis() + 100L * 365 * 24 * 60 * 60 * 1000)) // 100 tahun
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

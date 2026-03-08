@@ -17,8 +17,18 @@ public class DailyCashController {
     private final DailyCashService dailyCashService;
 
     @GetMapping
-    public ResponseEntity<List<DailyCashDto>> getAll() {
-        return ResponseEntity.ok(DailyCashDto.fromEntityList(dailyCashService.findAll()));
+    public ResponseEntity<List<DailyCashDto>> getAll(
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month
+    ) {
+        if ((year == null) != (month == null)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<DailyCash> data = (year != null && month != null)
+                ? dailyCashService.findByMonth(year, month)
+                : dailyCashService.findAll();
+        return ResponseEntity.ok(DailyCashDto.fromEntityList(data));
     }
 
     @GetMapping("/{id}")

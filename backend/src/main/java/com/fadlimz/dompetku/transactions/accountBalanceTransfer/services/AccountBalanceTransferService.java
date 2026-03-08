@@ -17,6 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Service
 @Transactional
@@ -166,5 +169,24 @@ public class AccountBalanceTransferService extends BaseService<AccountBalanceTra
     @Override
     public List<AccountBalanceTransfer> findAll() {
         return transferRepository.findByUser(userService.getLoggedInUser());
+    }
+
+    public List<AccountBalanceTransfer> findByMonth(Integer year, Integer month) {
+        validateMonth(month);
+        LocalDate start = LocalDate.of(year, month, 1);
+        LocalDate end = start.plusMonths(1);
+        Date startDate = Date.from(start.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date endDate = Date.from(end.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return transferRepository.findByUserAndTransactionDateGreaterThanEqualAndTransactionDateLessThan(
+                userService.getLoggedInUser(),
+                startDate,
+                endDate
+        );
+    }
+
+    private void validateMonth(Integer month) {
+        if (month == null || month < 1 || month > 12) {
+            throw new IllegalArgumentException("month harus di antara 1 dan 12");
+        }
     }
 }
