@@ -53,9 +53,9 @@
 
   <!-- Date Dialog -->
   @if (showDateDialog && selectedDate) {
-    <div class="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50" (click)="closeDateDialog()">
-      <div class="bg-white rounded-t-2xl md:rounded-2xl w-full md:max-w-md max-h-[80vh] overflow-hidden" (click)="$event.stopPropagation()">
-        <div class="p-4 border-b">
+    <div class="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-[60] p-4 pb-20 md:pb-0" (click)="closeDateDialog()">
+      <div class="bg-white rounded-t-2xl md:rounded-2xl w-full md:max-w-md max-h-[80vh] overflow-hidden flex flex-col" (click)="$event.stopPropagation()">
+        <div class="p-4 border-b flex-shrink-0">
           <div class="flex items-center justify-between">
             <h3 class="text-lg font-semibold">
               {{ selectedDate | date:'dd MMMM yyyy' }}
@@ -67,9 +67,9 @@
             </button>
           </div>
         </div>
-        
-        <div class="p-4 overflow-y-auto max-h-[60vh]">
-          @if (dailyCashForSelectedDate.length === 0) {
+
+        <div class="p-4 overflow-y-auto flex-1">
+          @if (dailyCashForSelectedDate.length === 0 && transferForSelectedDate.length === 0) {
             <div class="text-center py-8 text-gray-500">
               <p>Belum ada transaksi di tanggal ini</p>
             </div>
@@ -87,18 +87,38 @@
                 </div>
               </div>
             }
+
+            @for (transfer of transferForSelectedDate; track transfer.id) {
+              <div class="p-3 bg-blue-50 rounded-lg mb-2 cursor-pointer hover:bg-blue-100" (click)="goToTransferEdit(transfer)">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <p class="font-medium text-blue-700">Transfer</p>
+                    <p class="text-sm text-gray-600">
+                      {{ transfer.accountFrom?.accountName || getAccountNameById(transfer.fromAccountId) }} →
+                      {{ transfer.accountTo?.accountName || getAccountNameById(transfer.toAccountId) }}
+                    </p>
+                    @if (transfer.description) {
+                      <p class="text-xs text-gray-500 mt-1">{{ transfer.description }}</p>
+                    }
+                  </div>
+                  <div class="text-blue-700 font-medium">
+                    {{ transfer.value || 0 | number:'1.0-0' }}
+                  </div>
+                </div>
+              </div>
+            }
           }
         </div>
 
         <!-- Floating Add Button in Date Dialog -->
-        <button 
-          (click)="openFormModal()" 
-          class="md:hidden fixed bottom-16 left-1/2 -translate-x-1/2 bg-blue-500 hover:bg-blue-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-colors z-50">
+        <button
+          (click)="openFormModal()"
+          class="md:hidden fixed bottom-16 left-1/2 -translate-x-1/2 bg-blue-500 hover:bg-blue-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-colors z-[70]">
           <span class="text-2xl">+</span>
         </button>
 
-        <button 
-          (click)="openFormModal()" 
+        <button
+          (click)="openFormModal()"
           class="hidden md:flex fixed bottom-8 left-1/2 -translate-x-1/2 bg-blue-500 hover:bg-blue-600 text-white rounded-full px-6 py-3 items-center gap-2 shadow-lg transition-colors">
           <span class="text-xl">+</span>
           <span class="font-medium">Tambah Transaksi</span>
@@ -109,12 +129,12 @@
 
   <!-- Form Modal -->
   @if (showFormModal) {
-    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="closeFormModal()">
-      <div class="bg-white rounded-2xl w-full max-w-md p-6" (click)="$event.stopPropagation()">
+    <div class="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-[60] p-4 pb-20 md:pb-0" (click)="closeFormModal()">
+      <div class="bg-white rounded-2xl w-full max-w-md p-4 md:p-6 max-h-[85vh] overflow-y-auto" (click)="$event.stopPropagation()">
         <h3 class="text-xl font-semibold text-gray-800 mb-6">
           {{ isEditMode ? 'Edit Transaksi' : 'Tambah Transaksi Baru' }}
         </h3>
-        
+
         <form (ngSubmit)="onSubmit()">
           <!-- Date Input -->
           <div class="mb-4">
@@ -225,7 +245,7 @@
 
   <!-- Toast Notification -->
   @if (showToast) {
-    <div class="fixed top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-pulse">
+    <div class="fixed top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-[70] animate-pulse">
       {{ toastMessage }}
     </div>
   }

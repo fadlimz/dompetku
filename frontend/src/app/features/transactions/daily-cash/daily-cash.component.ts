@@ -1,12 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { AccountService } from '../../../core/services/account.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { TransactionService } from '../../../core/services/transaction.service';
+import { TransferService } from '../../../core/services/transfer.service';
 import { Account } from '../../../core/models/account.model';
 import { Category } from '../../../core/models/category.model';
 import { DailyCash } from '../../../core/models/transaction.model';
+import { Transfer } from '../../../core/models/transfer.model';
 
 @Component({
   selector: 'app-daily-cash',
@@ -21,8 +25,10 @@ export class DailyCashComponent implements OnInit {
   currentMonth: Date = new Date();
   calendarDays: { date: Date; isCurrentMonth: boolean; isToday: boolean; hasTransaction: boolean }[] = [];
   dailyCashList: DailyCash[] = [];
+  transferList: Transfer[] = [];
   selectedDate: Date | null = null;
   dailyCashForSelectedDate: DailyCash[] = [];
+  transferForSelectedDate: Transfer[] = [];
   showDateDialog = false;
   selectedDailyCash: DailyCash | null = null;
 
@@ -49,12 +55,14 @@ export class DailyCashComponent implements OnInit {
   constructor(
     private accountService: AccountService,
     private categoryService: CategoryService,
-    private transactionService: TransactionService
+    private transactionService: TransactionService,
+    private transferService: TransferService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.generateCalendar();
-    this.loadDailyCash();
+    this.loadMonthlyData();
     this.loadAccounts();
     this.loadCategories();
   }
@@ -66,11 +74,15 @@ export class DailyCashComponent implements OnInit {
   previousMonth(): void {
     this.currentMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() - 1, 1);
     this.generateCalendar();
+    this.closeDateDialog();
+    this.loadMonthlyData();
   }
 
   nextMonth(): void {
     this.currentMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() + 1, 1);
     this.generateCalendar();
+    this.closeDateDialog();
+    this.loadMonthlyData();
   }
 
   generateCalendar(): void {
@@ -138,26 +150,40 @@ export class DailyCashComponent implements OnInit {
   loadCategories(): void {
     this.categoryService.getAll().subscribe({
       next: (data: Category[]) => {
+        // Filter only Out categories (with categoryType) and sort alphabetically
         this.categories = data
-          .filter((c: Category) => c.activeFlag === 'Active')
+          .filter((c: Category) => c.cashFlowFlag === 'Out' && c.categoryType)
           .sort((a: Category, b: Category) => a.categoryName.localeCompare(b.categoryName));
       }
     });
   }
 
-  loadDailyCash(): void {
+  loadMonthlyData(): void {
     this.isLoading = true;
     this.errorMessage = '';
-    this.transactionService.getAll().subscribe({
-      next: (data) => {
-        this.dailyCashList = data;
+
+    const year = this.currentMonth.getFullYear();
+    const month = this.currentMonth.getMonth() + 1;
+
+    forkJoin({
+      dailyCash: this.transactionService.getAll(year, month),
+      transfers: this.transferService.getAll(year, month)
+    }).subscribe({
+      next: ({ dailyCash, transfers }) => {
+        this.dailyCashList = dailyCash;
+        this.transferList = transfers;
         this.updateCalendarHasTransaction();
+
+        if (this.selectedDate) {
+          this.loadDailyCashForDate(this.selectedDate);
+        }
+
         this.isLoading = false;
       },
       error: (err) => {
         this.errorMessage = 'Gagal memuat data transaksi';
         this.isLoading = false;
-        console.error('Error loading daily cash:', err);
+        console.error('Error loading monthly data:', err);
       }
     });
   }
@@ -180,6 +206,31 @@ export class DailyCashComponent implements OnInit {
     this.dailyCashForSelectedDate = this.dailyCashList.filter(dc => {
       if (!dc.transactionDate) return false;
       return new Date(dc.transactionDate).toDateString() === date.toDateString();
+    });
+
+    this.transferForSelectedDate = this.transferList.filter(transfer => {
+      if (!transfer.transactionDate) return false;
+      return new Date(transfer.transactionDate).toDateString() === date.toDateString();
+    });
+  }
+
+  getAccountNameById(accountId?: string): string {
+    if (!accountId) {
+      return '-';
+    }
+
+    const account = this.accounts.find(a => a.id === accountId);
+    return account?.accountName || '-';
+  }
+
+  goToTransferEdit(transfer: Transfer): void {
+    if (!transfer.id) {
+      return;
+    }
+
+    this.closeDateDialog();
+    this.router.navigate(['/transfer'], {
+      queryParams: { editId: transfer.id }
     });
   }
 
@@ -280,7 +331,7 @@ export class DailyCashComponent implements OnInit {
     this.isSubmitting = false;
     this.closeFormModal();
     this.closeDateDialog();
-    this.loadDailyCash();
+    this.loadMonthlyData();
     this.showToastMessage(message);
   }
 
@@ -295,7 +346,7 @@ export class DailyCashComponent implements OnInit {
         this.isSubmitting = false;
         this.closeFormModal();
         this.closeDateDialog();
-        this.loadDailyCash();
+        this.loadMonthlyData();
         this.showToastMessage('Transaksi berhasil dihapus');
       },
       error: (err) => {

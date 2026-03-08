@@ -45,13 +45,17 @@
               [class.text-orange-700]="category.cashFlowFlag === 'Out'">
               {{ category.cashFlowFlag === 'In' ? 'Pemasukan' : 'Pengeluaran' }}
             </span>
-            <span class="text-xs px-2 py-1 rounded-full" 
-              [class.bg-green-100]="category.activeFlag === 'Active'"
-              [class.text-green-700]="category.activeFlag === 'Active'"
-              [class.bg-gray-100]="category.activeFlag !== 'Active'"
-              [class.text-gray-700]="category.activeFlag !== 'Active'">
-              {{ category.activeFlag === 'Active' ? 'Aktif' : 'Tidak Aktif' }}
-            </span>
+            @if (category.cashFlowFlag === 'Out' && category.categoryType) {
+              <span class="text-xs px-2 py-1 rounded-full"
+                [class.bg-purple-100]="category.categoryType === 'Needs'"
+                [class.text-purple-700]="category.categoryType === 'Needs'"
+                [class.bg-pink-100]="category.categoryType === 'Wants'"
+                [class.text-pink-700]="category.categoryType === 'Wants'"
+                [class.bg-teal-100]="category.categoryType === 'Savings'"
+                [class.text-teal-700]="category.categoryType === 'Savings'">
+                {{ category.categoryType === 'Needs' ? 'Kebutuhan' : category.categoryType === 'Wants' ? 'Keinginan' : 'Tabungan' }}
+              </span>
+            }
           </div>
         </div>
       }
@@ -118,28 +122,47 @@
             </div>
           </div>
 
-          <!-- Active Flag Checkbox -->
-          <div class="mb-6">
-            <label class="flex items-center gap-3 cursor-pointer">
-              <div class="relative">
-                <input 
-                  type="checkbox" 
-                  [(ngModel)]="activeFlag" 
-                  name="activeFlag"
-                  class="sr-only"
-                />
-                <div class="w-11 h-6 rounded-full transition-colors"
-                  [class.bg-blue-500]="activeFlag"
-                  [class.bg-gray-300]="!activeFlag">
-                </div>
-                <div class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
-                  [class.translate-x-5]="activeFlag"
-                  [class.translate-x-0]="!activeFlag">
-                </div>
+          <!-- Category Type Radio Buttons - Only show if cashFlowFlag === 'Out' -->
+          @if (cashFlowFlag === 'Out') {
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-3">Tipe</label>
+              <div class="space-y-2">
+                <!-- Kebutuhan / Needs (default, first) -->
+                <label class="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="radio"
+                    [(ngModel)]="categoryType"
+                    name="categoryType"
+                    value="Needs"
+                    class="w-4 h-4 text-purple-500 border-gray-300 focus:ring-purple-500"
+                  />
+                  <span class="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">Kebutuhan</span>
+                </label>
+                <!-- Keinginan / Wants (second) -->
+                <label class="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="radio"
+                    [(ngModel)]="categoryType"
+                    name="categoryType"
+                    value="Wants"
+                    class="w-4 h-4 text-pink-500 border-gray-300 focus:ring-pink-500"
+                  />
+                  <span class="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">Keinginan</span>
+                </label>
+                <!-- Tabungan / Savings (third) -->
+                <label class="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="radio"
+                    [(ngModel)]="categoryType"
+                    name="categoryType"
+                    value="Savings"
+                    class="w-4 h-4 text-teal-500 border-gray-300 focus:ring-teal-500"
+                  />
+                  <span class="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">Tabungan</span>
+                </label>
               </div>
-              <span class="text-sm text-gray-700">Aktif</span>
-            </label>
-          </div>
+            </div>
+          }
 
           <!-- Error Message -->
           @if (submitError) {

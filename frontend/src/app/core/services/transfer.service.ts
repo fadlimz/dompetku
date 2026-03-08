@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Transfer } from '../../core/models/transfer.model';
@@ -8,12 +8,20 @@ import { Transfer } from '../../core/models/transfer.model';
   providedIn: 'root'
 })
 export class TransferService {
-  private readonly API_URL = `${environment.apiUrl}/account-balance-transfer`;
+  private readonly API_URL = `${environment.apiUrl}/transactions/transfers`;
 
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<Transfer[]> {
-    return this.http.get<Transfer[]>(this.API_URL);
+  getAll(year?: number, month?: number): Observable<Transfer[]> {
+    let params = new HttpParams();
+
+    if (year !== undefined && month !== undefined) {
+      params = params
+        .set('year', year.toString())
+        .set('month', month.toString());
+    }
+
+    return this.http.get<Transfer[]>(this.API_URL, { params });
   }
 
   getById(id: string): Observable<Transfer> {

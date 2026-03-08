@@ -23,11 +23,11 @@ export class CategoriesComponent implements OnInit {
   
   selectedCategory: Category | null = null;
   isEditMode = false;
-  
+
   categoryName = '';
   categoryCode = '';
   cashFlowFlag = 'Out';
-  activeFlag = true;
+  categoryType = 'Needs';
   
   showToast = false;
   toastMessage = '';
@@ -62,21 +62,22 @@ export class CategoriesComponent implements OnInit {
   openModal(category?: Category): void {
     this.showModal = true;
     this.submitError = '';
-    
+
     if (category) {
       this.isEditMode = true;
       this.selectedCategory = category;
       this.categoryName = category.categoryName;
       this.categoryCode = category.categoryCode;
       this.cashFlowFlag = category.cashFlowFlag || 'Out';
-      this.activeFlag = category.activeFlag === 'Active';
+      // Set categoryType based on cashFlowFlag: empty for 'In', value for 'Out'
+      this.categoryType = category.cashFlowFlag === 'In' ? '' : (category.categoryType || 'Needs');
     } else {
       this.isEditMode = false;
       this.selectedCategory = null;
       this.categoryName = '';
       this.categoryCode = '';
       this.cashFlowFlag = 'Out';
-      this.activeFlag = true;
+      this.categoryType = 'Needs';
     }
   }
 
@@ -100,7 +101,8 @@ export class CategoriesComponent implements OnInit {
       categoryCode: this.categoryCode.trim(),
       categoryName: this.categoryName.trim(),
       cashFlowFlag: this.cashFlowFlag,
-      activeFlag: this.activeFlag ? 'Active' : 'Inactive'
+      // Send empty string for categoryType if cashFlowFlag is 'In'
+      categoryType: this.cashFlowFlag === 'In' ? '' : this.categoryType
     };
 
     if (this.isEditMode && this.selectedCategory) {

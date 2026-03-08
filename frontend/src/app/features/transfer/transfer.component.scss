@@ -1,0 +1,8 @@
+// Transfer Component styles
+// Most styling handled by TailwindCSS
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}

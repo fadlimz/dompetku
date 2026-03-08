@@ -1,0 +1,16 @@
+# Ignore everything except backend
+**
+!backend/
+
+# Inside backend, ignore build artifacts
+backend/build/**
+backend/bin/**
+backend/.gradle/**
+
+# IDE files
+backend/.idea/**
+backend/.vscode/**
+*.iml
+
+# Git
+backend/.git/**
