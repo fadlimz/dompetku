@@ -28,4 +28,5 @@ ENV SPRING_DATASOURCE_PASSWORD=password
 ENV JWT_SECRET=your-secret-key-here
 
 # Optimasi RAM saat menjalankan Java di server Hugging Face (16GB RAM available)
-ENTRYPOINT ["java", "-Xmx1g", "-Xss512k", "-jar", "app.jar"]
+# Force IPv4 untuk avoid DNS resolution issue
+ENTRYPOINT ["java", "-Djava.net.preferIPv4Stack=true", "-Xmx1g", "-Xss512k", "-jar", "app.jar"]

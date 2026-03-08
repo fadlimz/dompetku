@@ -53,6 +53,9 @@ rsync -av --quiet \
     --exclude '.classpath' \
     --exclude '.factorypath' \
     --exclude '*.log' \
+    --exclude 'truststore.jks' \
+    --exclude 'gradle.crt' \
+    --exclude 'maven.crt' \
     "$PROJECT_ROOT/backend/" "$TEMP_DIR/"
 
 # Step 3: Create README.md with HF metadata
