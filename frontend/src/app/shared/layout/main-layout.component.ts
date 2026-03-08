@@ -12,7 +12,7 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class MainLayoutComponent implements OnInit {
   @Input() pageTitle: string = 'Dashboard';
-  
+
   userName: string = 'User';
   isDropdownOpen: boolean = false;
 
@@ -32,6 +32,10 @@ export class MainLayoutComponent implements OnInit {
   onLogout(): void {
     this.authService.logout();
     this.router.navigate(['/auth/login']);
+  }
+
+  openSettings(): void {
+    this.router.navigate(['/settings']);
   }
 
   toggleDropdown(): void {

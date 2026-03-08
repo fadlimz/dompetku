@@ -60,12 +60,19 @@
         </button>
         
         <!-- Dropdown Menu -->
-        <div 
-          *ngIf="isDropdownOpen" 
+        <div
+          *ngIf="isDropdownOpen"
           class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50"
         >
-          <button 
-            (click)="onLogout(); closeDropdown()" 
+          <button
+            (click)="openSettings(); closeDropdown()"
+            class="flex items-center gap-3 px-4 py-2 w-full text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+          >
+            <span class="text-lg">⚙️</span>
+            <span>Settings</span>
+          </button>
+          <button
+            (click)="onLogout(); closeDropdown()"
             class="flex items-center gap-3 px-4 py-2 w-full text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors"
           >
             <span class="text-lg">🚪</span>

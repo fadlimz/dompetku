@@ -1,0 +1,67 @@
+<div class="settings-container">
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="toast toast-success">
+    <span>{{ successMessage }}</span>
+    <button (click)="successMessage = ''" class="toast-close">&times;</button>
+  </div>
+
+  <!-- Settings Card -->
+  <div class="settings-card">
+    <div class="settings-header">
+      <h3>⚙️ Pengaturan</h3>
+    </div>
+
+    <div class="settings-content">
+      <div *ngIf="isLoading" class="loading-state">
+        <p>Memuat pengaturan...</p>
+      </div>
+
+      <div *ngIf="!isLoading && errorMessage" class="error-state">
+        <p>{{ errorMessage }}</p>
+        <button (click)="loadCutOffDate()" class="btn-retry">Coba Lagi</button>
+      </div>
+
+      <div *ngIf="!isLoading && !errorMessage" class="settings-row">
+        <label class="settings-label">Tanggal Cut Off</label>
+        
+        <div class="settings-value-wrapper">
+          <span *ngIf="!isEditMode" class="settings-value">
+            {{ cutOffDateValue ?? 'Belum diatur' }}
+          </span>
+          
+          <input
+            *ngIf="isEditMode"
+            type="number"
+            [(ngModel)]="cutOffDateValue"
+            (input)="onNumberInput($event)"
+            min="1"
+            max="31"
+            placeholder="1-31"
+            class="form-input"
+            [class.error]="submitError"
+            autofocus
+          />
+          
+          <button
+            (click)="isEditMode ? onSubmit() : openEdit()"
+            class="btn-edit"
+            [disabled]="isSubmitting"
+          >
+            {{ isEditMode ? (isSubmitting ? 'Menyimpan...' : 'Simpan') : 'Ubah' }}
+          </button>
+          
+          <button
+            *ngIf="isEditMode"
+            (click)="cancelEdit()"
+            class="btn-cancel"
+            [disabled]="isSubmitting"
+          >
+            Batal
+          </button>
+        </div>
+        
+        <p *ngIf="submitError && isEditMode" class="error-message">{{ submitError }}</p>
+      </div>
+    </div>
+  </div>
+</div>
