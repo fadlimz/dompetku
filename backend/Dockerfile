@@ -21,4 +21,4 @@ COPY --from=build /app/build/libs/*.jar app.jar
 EXPOSE 7860
 
 # Force IPv4 untuk avoid DNS resolution issue
-ENTRYPOINT ["java", "-Djava.net.preferIPv4Stack=true", "-Xmx1g", "-Xss512k", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Djava.net.preferIPv4Stack=true", "-Xmx512m", "-Xss512k", "-jar", "app.jar"]
