@@ -76,6 +76,33 @@
       />
     </div>
 
+    <!-- Category Type Radio Buttons -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Kategori <span class="text-red-500">*</span></label>
+      <div class="flex gap-6">
+        <label class="flex items-center cursor-pointer">
+          <input
+            type="radio"
+            [(ngModel)]="formCategoryType"
+            name="categoryType"
+            value="Needs"
+            class="w-4 h-4 text-blue-600 focus:ring-blue-500"
+          />
+          <span class="ml-2 text-sm text-gray-700">Kebutuhan</span>
+        </label>
+        <label class="flex items-center cursor-pointer">
+          <input
+            type="radio"
+            [(ngModel)]="formCategoryType"
+            name="categoryType"
+            value="Savings"
+            class="w-4 h-4 text-blue-600 focus:ring-blue-500"
+          />
+          <span class="ml-2 text-sm text-gray-700">Tabungan</span>
+        </label>
+      </div>
+    </div>
+
     <!-- Description Input -->
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">Keterangan <span class="text-gray-400">(Opsional)</span></label>

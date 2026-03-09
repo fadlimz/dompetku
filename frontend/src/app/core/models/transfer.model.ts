@@ -12,4 +12,5 @@ export interface Transfer extends BaseEntity {
   accountTo?: Account;
   value?: number;
   description?: string;
+  categoryType?: string;
 }

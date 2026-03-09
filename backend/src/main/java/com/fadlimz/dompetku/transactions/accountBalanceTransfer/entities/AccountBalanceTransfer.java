@@ -43,6 +43,9 @@ public class AccountBalanceTransfer extends BaseEntity {
     @Column(name = "description", length = 1024)
     private String description;
 
+    @Column(name = "category_type", length = 8)
+    private String categoryType;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

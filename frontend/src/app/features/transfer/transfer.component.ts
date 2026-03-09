@@ -27,7 +27,8 @@ export class TransferComponent implements OnInit {
   formToAccountId = '';
   formValue = '';
   formDescription = '';
-  
+  formCategoryType = 'Needs';
+
   isSubmitting = false;
   submitError = '';
   showToast = false;
@@ -117,6 +118,7 @@ export class TransferComponent implements OnInit {
     this.formToAccountId = '';
     this.formValue = '';
     this.formDescription = '';
+    this.formCategoryType = 'Needs';
     this.submitError = '';
   }
 
@@ -130,6 +132,7 @@ export class TransferComponent implements OnInit {
         this.formToAccountId = transfer.toAccountId || transfer.accountTo?.id || '';
         this.formValue = this.formatNumber(transfer.value || 0);
         this.formDescription = transfer.description || '';
+        this.formCategoryType = transfer.categoryType || 'Needs';
       },
       error: (err) => {
         this.submitError = err.error?.message || 'Gagal memuat data transfer';
@@ -178,7 +181,8 @@ export class TransferComponent implements OnInit {
       fromAccountId: this.formFromAccountId,
       toAccountId: this.formToAccountId,
       value: this.parseFormattedNumber(this.formValue),
-      description: this.formDescription
+      description: this.formDescription,
+      categoryType: this.formCategoryType
     };
 
     this.isSubmitting = true;

@@ -98,10 +98,13 @@ CREATE TABLE IF NOT EXISTS "account_balance_transfer" (
     created_time TIMESTAMP,
     modified_by VARCHAR(100),
     modified_time TIMESTAMP,
-    transfer_date DATE,
-    transfer_amount NUMERIC(30, 10), -- Menggunakan NUMERIC sesuai permintaan untuk uang
+    transaction_number SERIAL, -- Auto increment integer for transaction number
+    transaction_date DATE,
+    value NUMERIC(30, 10), -- Menggunakan NUMERIC sesuai permintaan untuk uang
     description VARCHAR(1024),
-    source_account_id VARCHAR(100) REFERENCES "account"(id),
-    destination_account_id VARCHAR(100) REFERENCES "account"(id),
+    category_type VARCHAR(8), -- Needs / Savings
+    transaction_code_id VARCHAR(100) REFERENCES "transaction_code"(id),
+    from_account_id VARCHAR(100) REFERENCES "account"(id),
+    to_account_id VARCHAR(100) REFERENCES "account"(id),
     user_id VARCHAR(100) REFERENCES "users"(id)
 );

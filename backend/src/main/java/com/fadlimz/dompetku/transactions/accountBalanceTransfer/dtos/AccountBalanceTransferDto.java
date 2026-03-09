@@ -26,12 +26,14 @@ public class AccountBalanceTransferDto extends BaseDto {
     public String toAccountId;
     public Double value;
     public String description;
+    public String categoryType;
 
     public AccountBalanceTransfer toEntity() {
         AccountBalanceTransfer entity = super.toEntity(AccountBalanceTransfer.class);
         entity.setTransactionDate(transactionDate);
         entity.setValue(value);
         entity.setDescription(description);
+        entity.setCategoryType(categoryType);
         return entity;
     }
 
@@ -42,6 +44,7 @@ public class AccountBalanceTransferDto extends BaseDto {
         dto.transactionDate = entity.getTransactionDate();
         dto.value = entity.getValue();
         dto.description = entity.getDescription();
+        dto.categoryType = entity.getCategoryType();
 
         if (entity.getTransactionCode() != null) {
             dto.transactionCodeId = entity.getTransactionCode().getId();
