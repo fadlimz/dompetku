@@ -150,9 +150,9 @@ export class DailyCashComponent implements OnInit {
   loadCategories(): void {
     this.categoryService.getAll().subscribe({
       next: (data: Category[]) => {
-        // Filter only Out categories (with categoryType) and sort alphabetically
+        // Filter categories with categoryType and sort alphabetically
         this.categories = data
-          .filter((c: Category) => c.cashFlowFlag === 'Out' && c.categoryType)
+          .filter((c: Category) => c.categoryType)
           .sort((a: Category, b: Category) => a.categoryName.localeCompare(b.categoryName));
       }
     });
