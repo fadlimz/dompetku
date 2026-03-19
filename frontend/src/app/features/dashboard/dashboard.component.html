@@ -42,8 +42,8 @@
 
 <!-- Balance Detail Dialog -->
 @if (showBalanceDialog) {
-  <div class="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-[60] p-4 pb-20 md:pb-0" (click)="closeBalanceDialog()">
-    <div class="bg-white rounded-t-2xl md:rounded-2xl w-full md:max-w-md max-h-[85vh] overflow-hidden flex flex-col" (click)="$event.stopPropagation()">
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4 md:p-6" (click)="closeBalanceDialog()">
+    <div class="bg-white rounded-2xl w-full md:max-w-md max-h-[85vh] overflow-hidden flex flex-col" (click)="$event.stopPropagation()">
       <div class="p-4 border-b flex-shrink-0">
         <div class="flex items-center justify-between">
           <h3 class="text-lg font-semibold">Rincian Saldo</h3>
