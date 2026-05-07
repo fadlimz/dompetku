@@ -62,8 +62,5 @@ frontend/.angular/
 frontend/node_modules/
 frontend/.nx/
 
-### Documentation ###
-docs/
-
 ### Worktrees ###
 .worktrees/
