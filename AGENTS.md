@@ -5,12 +5,12 @@
 
 ## Gambaran Umum Proyek
 
-Dompetku adalah aplikasi manajemen keuangan pribadi yang dibangun dengan Spring Boot (Java 17) yang memungkinkan pengguna melacak transaksi keuangan mereka, mengelola akun, dan mengategorikan pengeluaran/pemasukan. Aplikasi ini menggunakan otentikasi dan otorisasi berbasis JWT, dengan SQLite sebagai database utama.
+Dompetku adalah aplikasi manajemen keuangan pribadi yang dibangun dengan Spring Boot (Java 17) yang memungkinkan pengguna melacak transaksi keuangan mereka, mengelola akun, dan mengategorikan pengeluaran/pemasukan. Aplikasi ini menggunakan otentikasi dan otorisasi berbasis JWT, dengan PostgreSQL sebagai database utama.
 
 ### Teknologi & Fitur Utama:
 - **Framework Backend**: Spring Boot 3.5.0
 - **Bahasa Pemrograman**: Java 17
-- **Database**: SQLite (dengan Hibernate/JPA)
+- **Database**: PostgreSQL (dengan Hibernate/JPA)
 - **Otentikasi**: JWT (JSON Web Tokens)
 - **Keamanan**: Spring Security
 - **Sistem Build**: Gradle
@@ -111,9 +111,10 @@ src/
 - Endpoint terproteksi: Semua fitur manajemen keuangan lainnya
 
 ### Database
-- Database SQLite disimpan sebagai file `dompetku.db`
+- Database PostgreSQL dengan koneksi melalui environment variable
+- File `.env` untuk konfigurasi database (tidak boleh di-commit)
 - Pembaruan skema otomatis diaktifkan (`ddl-auto=update`)
-- JPA/Hibernate dengan dialek SQLite khusus
+- JPA/Hibernate dengan dialek PostgreSQL
 
 ### Pengujian
 - JUnit 5 untuk pengujian unit/integrasi
@@ -123,7 +124,7 @@ src/
 ## Konfigurasi Lingkungan
 
 Aplikasi ini menggunakan konfigurasi berikut di `application.properties`:
-- Koneksi database SQLite
+- Koneksi database PostgreSQL melalui environment variable
 - Pembaruan otomatis Hibernate DDL
 - Logging SQL diaktifkan untuk debugging
 

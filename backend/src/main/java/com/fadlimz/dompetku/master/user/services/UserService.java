@@ -32,10 +32,15 @@ public class UserService extends BaseService<User> {
                 .orElseThrow(() -> new RuntimeException("User not found in context: " + identifier));
     }
 
+    public User getByUserName(String userName) {
+        return userRepository.findByUserName(userName)
+                .orElseThrow(() -> new RuntimeException("UserName " + userName + " not found"));
+    }
+
     public User create(UserDto userDto) {
         User user = userDto.toEntity();
         validation(user);
-        
+
         // Encode and set password if provided
         if (!StringUtil.isBlank(userDto.getPassword())) {
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));

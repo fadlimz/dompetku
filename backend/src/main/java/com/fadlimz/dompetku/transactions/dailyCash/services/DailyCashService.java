@@ -207,10 +207,6 @@ public class DailyCashService extends BaseService<DailyCash> {
         }
     }
 
-    @Override
-    public Optional<DailyCash> findById(String id) {
-        return dailyCashRepository.findByIdAndUser(id, userService.getLoggedInUser());
-    }
 
     @Override
     public List<DailyCash> findAll() {

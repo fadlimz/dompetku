@@ -22,8 +22,8 @@ public class AccountBalanceService extends BaseService<AccountBalance> {
     private final AccountService accountService;
     private final UserService userService;
 
-    public AccountBalanceService(AccountBalanceRepository accountBalanceRepository, 
-                                 AccountService accountService, 
+    public AccountBalanceService(AccountBalanceRepository accountBalanceRepository,
+                                 AccountService accountService,
                                  UserService userService) {
         super(accountBalanceRepository);
         this.accountBalanceRepository = accountBalanceRepository;
@@ -33,7 +33,7 @@ public class AccountBalanceService extends BaseService<AccountBalance> {
 
     public AccountBalance create(AccountBalanceDto dto) {
         User user = userService.getLoggedInUser();
-        
+
         Account account = accountService.findById(dto.getAccountId())
                 .orElseThrow(() -> new RuntimeException("Account not found or access denied"));
 
@@ -45,7 +45,7 @@ public class AccountBalanceService extends BaseService<AccountBalance> {
         AccountBalance balance = dto.toEntity();
         balance.setAccount(account);
         balance.setUser(user);
-        
+
         return save(balance);
     }
 
@@ -54,16 +54,11 @@ public class AccountBalanceService extends BaseService<AccountBalance> {
                 .orElseThrow(() -> new RuntimeException("Balance not found"));
 
         existing.setValue(dto.getValue());
-        
-        // Note: accountId modification usually not allowed for balances, 
+
+        // Note: accountId modification usually not allowed for balances,
         // but if needed, we'd add logic here similar to create.
 
         return update(existing);
-    }
-
-    @Override
-    public Optional<AccountBalance> findById(String id) {
-        return accountBalanceRepository.findByIdAndUser(id, userService.getLoggedInUser());
     }
 
     @Override

@@ -47,4 +47,19 @@ public class CategoryController {
         categoryService.delete(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/master")
+    public ResponseEntity<List<CategoryDto>> getAllMaster(@RequestParam(required = false) String userName) {
+        List<Category> categories = categoryService.searchByUserName(userName);
+        return ResponseEntity.ok(CategoryDto.fromEntityList(categories));
+    }
+
+    @GetMapping("/master/{id}")
+    public ResponseEntity<CategoryDto> getByIdMaster(@PathVariable String id) {
+        return categoryService.findById(id)
+                .map(CategoryDto::fromEntity)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
 }

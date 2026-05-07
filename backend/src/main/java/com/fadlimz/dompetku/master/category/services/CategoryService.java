@@ -48,7 +48,7 @@ public class CategoryService extends BaseService<Category> {
 
     public Category update(String id, CategoryDto dto) {
         User user = userService.getLoggedInUser();
-        
+
         Category existing = findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
@@ -73,11 +73,6 @@ public class CategoryService extends BaseService<Category> {
     }
 
     @Override
-    public Optional<Category> findById(String id) {
-        return categoryRepository.findByIdAndUser(id, userService.getLoggedInUser());
-    }
-
-    @Override
     public List<Category> findAll() {
         return categoryRepository.findByUser(userService.getLoggedInUser());
     }
@@ -92,6 +87,12 @@ public class CategoryService extends BaseService<Category> {
             return findAll();
         }
         return categoryRepository.search(user, keyword);
+    }
+
+    public List<Category> searchByUserName(String userName) {
+        User user = userService.getByUserName(userName);
+
+        return categoryRepository.findByUser(user);
     }
 
     /**

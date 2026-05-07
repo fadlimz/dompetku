@@ -75,11 +75,6 @@ public class CutOffDateService extends BaseService<CutOffDate> {
     }
 
     @Override
-    public Optional<CutOffDate> findById(String id) {
-        return cutOffDateRepository.findByIdAndUser(id, userService.getLoggedInUser());
-    }
-
-    @Override
     public List<CutOffDate> findAll() {
         return cutOffDateRepository.findByUser(userService.getLoggedInUser());
     }

@@ -161,10 +161,7 @@ public class AccountBalanceTransferService extends BaseService<AccountBalanceTra
         }
     }
 
-    @Override
-    public Optional<AccountBalanceTransfer> findById(String id) {
-        return transferRepository.findByIdAndUser(id, userService.getLoggedInUser());
-    }
+
 
     @Override
     public List<AccountBalanceTransfer> findAll() {

@@ -51,7 +51,7 @@ public class AccountService extends BaseService<Account> {
 
     public Account update(String id, AccountDto dto) {
         User user = userService.getLoggedInUser();
-        
+
         // Reuse findById (which we will override to be secure) or check manually
         // Since we override findById below to be secure, we can trust it.
         Account existing = findById(id)
@@ -68,7 +68,7 @@ public class AccountService extends BaseService<Account> {
         existing.setAccountCode(dto.getAccountCode());
         existing.setAccountName(dto.getAccountName());
         existing.setActiveFlag(dto.getActiveFlag());
-        
+
         // BaseService.update handles auditing
         return update(existing);
     }
@@ -78,13 +78,6 @@ public class AccountService extends BaseService<Account> {
         // Verify existence and ownership
         findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
         super.delete(id);
-    }
-
-    // Override findById to enforce User Isolation
-    // This satisfies "filter user mutlak" while keeping the BaseService method signature
-    @Override
-    public Optional<Account> findById(String id) {
-        return accountRepository.findByIdAndUser(id, userService.getLoggedInUser());
     }
 
     // Override findAll to enforce User Isolation

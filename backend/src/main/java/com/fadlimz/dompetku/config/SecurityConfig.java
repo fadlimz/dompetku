@@ -24,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
+    private final ApiKeyAuthFilter apiKeyAuthFilter;
     private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
@@ -60,10 +61,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll() // Create User Public
                         .requestMatchers("/api/auth/**").permitAll() // Login Public
+                        .requestMatchers("/api/*/master").permitAll() // Master API Public (dengan API Key)
+                        .requestMatchers("/api/*/master/*").permitAll() // Master API Public (dengan API Key)
                         .requestMatchers("/error").permitAll() // Allow Error Endpoint
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
+                .addFilterBefore(apiKeyAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
